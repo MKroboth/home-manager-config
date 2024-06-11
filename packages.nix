@@ -2,7 +2,7 @@
 
 {
   home.packages = with pkgs; [
-  sumneko-lua-language-server
+    sumneko-lua-language-server
     blender-hip
     brave
     cava
@@ -25,11 +25,9 @@
     grimblast
     helvum
     hyprpaper
-    jetbrains-toolbox
     keepassxc
     kitty
     libtool
-    moonlight-qt
     ncmpcpp
     nixd
     nixfmt-rfc-style
@@ -46,7 +44,6 @@
     spice-gtk
     steam
     texlive.combined.scheme-full
-    thefuck
     typescript
     unzip
     vorta
