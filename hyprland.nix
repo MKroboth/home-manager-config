@@ -57,6 +57,7 @@
         "forceinput, class:.*"
         "minsize 1 1 , title:^(),class:^(steam)"
         "stayfocused,class:(steam),title:(^$)"
+        "opacity 1,fullscreen:1"
       ];
 
       input = {
@@ -74,9 +75,9 @@
       general = {
         # See https://wiki.hyprland.org/Configuring/Variables/ for more
 
-        gaps_in = 0;
+        gaps_in = 10;
         gaps_out = 20;
-        border_size = 1;
+        border_size = 2;
         "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
         "col.inactive_border" = "rgba(595959aa)";
 
@@ -89,7 +90,7 @@
       decoration = {
         # See https://wiki.hyprland.org/Configuring/Variables/ for more
 
-        rounding = 0;
+        rounding = 10;
 
         blur = {
           enabled = true;
@@ -99,7 +100,7 @@
           vibrancy = 0.1696;
         };
 
-        drop_shadow = false;
+        drop_shadow = true;
         shadow_range = 4;
         shadow_render_power = 3;
         "col.shadow" = "rgba(1a1a1aee)";
