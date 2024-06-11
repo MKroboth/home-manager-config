@@ -38,8 +38,8 @@
       "$browser" = "brave";
 
       exec-once = [
+        "~/bin/video-wallpapers.sh"
         "dex -a"
-        "hyprpaper"
         "waybar"
       ];
 
