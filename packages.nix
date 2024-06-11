@@ -2,7 +2,6 @@
 
 {
   home.packages = with pkgs; [
-    sumneko-lua-language-server
     blender-hip
     brave
     cava
@@ -44,6 +43,7 @@
     sonic-pi
     spice-gtk
     steam
+    sumneko-lua-language-server
     texlive.combined.scheme-full
     typescript
     unzip
