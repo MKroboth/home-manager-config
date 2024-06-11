@@ -26,6 +26,7 @@
     helvum
     hyprpaper
     keepassxc
+    killall
     kitty
     libtool
     ncmpcpp
