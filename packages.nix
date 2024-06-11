@@ -36,7 +36,6 @@
     nodejs_22
     obsidian
     pandoc
-    pcmanfm
     pulseaudio
     razergenie
     ripgrep
