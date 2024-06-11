@@ -11,7 +11,7 @@ do --#region Globals
   vim.g.hardmode = true
 
   -- set to true if you want to force yourself to use advanced movements.
-  vim.g.i_hate_myself = false
+  vim.g.i_hate_myself = true
 
   -- Set to true if you have a Nerd Font installed and selected in the terminal
   vim.g.have_nerd_font = true
