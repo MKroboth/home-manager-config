@@ -1,4 +1,9 @@
-{ inputs, config, pkgs, ... }:
+{
+  inputs,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -71,13 +76,16 @@
 
   programs.emacs = {
     enable = true;
-    package =
-      pkgs.emacs; # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
+    package = pkgs.emacs; # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
   };
 
   systemd.user.services.pulseaudio-pipewire-modules = {
-    Unit = { Description = "Load pipewire-pulseaudio modules"; };
-    Install = { WantedBy = [ "default.target" ]; };
+    Unit = {
+      Description = "Load pipewire-pulseaudio modules";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
     Service = {
       ExecStart = "${pkgs.writeShellScript "load-pulseaudio-pipewire-modules" ''
         #!/run/current-system/sw/bin/bash
@@ -94,5 +102,4 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-
 }

@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  
+
   home.packages = with pkgs; [
     ardour
     sunvox
@@ -16,20 +16,8 @@
     aeolus
     aeolus-stops
     alsa-scarlett-gui
-
   ];
   home.sessionVariables = {
-      LV2_PATH = ~/.local/state/nix/profiles/profile/lib/lv2;
+    LV2_PATH = ~/.local/state/nix/profiles/profile/lib/lv2;
   };
-
 }
-
-
-
-
-
-
-
-
-
-

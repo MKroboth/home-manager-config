@@ -1,24 +1,30 @@
-{ lib, ... }: {
+{ lib, ... }:
+{
   wayland.windowManager.hyprland = {
     enable = true;
 
-    extraConfig = let
-      mkBind = key: action: ''
-        bind=${key},${action}
-        bind=${key},submap,reset'';
-      resetSubmap = ''
-        bind=,Return,submap,reset
-        bind=,Escape,submap,reset
-        submap=reset
-      '';
+    extraConfig =
+      let
+        mkBind = key: action: ''
+          bind=${key},${action}
+          bind=${key},submap,reset'';
+        resetSubmap = ''
+          bind=,Return,submap,reset
+          bind=,Escape,submap,reset
+          submap=reset
+        '';
+      in
       # setup keybindings for launching applications
-    in lib.concatStrings [  ''
-      submap=execute
-      ${mkBind ",w" "exec,$browser"}
-      ${mkBind ",e" "exec,$editor"}
-      ${mkBind ",n" "exec,$notes"}
-      ${mkBind ",f" "exec,$fileManager"}
-    '' resetSubmap ];
+      lib.concatStrings [
+        ''
+          submap=execute
+          ${mkBind ",w" "exec,$browser"}
+          ${mkBind ",e" "exec,$editor"}
+          ${mkBind ",n" "exec,$notes"}
+          ${mkBind ",f" "exec,$fileManager"}
+        ''
+        resetSubmap
+      ];
 
     settings = {
       "$mod" = "SUPER";
@@ -31,13 +37,17 @@
       "$editor" = "emacs";
       "$browser" = "brave";
 
-      exec-once = ["dex -a" "hyprpaper" "waybar" ];
+      exec-once = [
+        "dex -a"
+        "hyprpaper"
+        "waybar"
+      ];
 
       monitor = [
-                  "DP-3,1920x1080@60,0x0,1"
-                  "DP-2,1920x1080@60,1920x0,1"
-                  "DP-1,1920x1080@60,3840x0,1"
-                ];
+        "DP-3,1920x1080@60,0x0,1"
+        "DP-2,1920x1080@60,1920x0,1"
+        "DP-1,1920x1080@60,3840x0,1"
+      ];
 
       windowrulev2 = [
         "opacity 0.96, class:.*" # make all windows 4% transparent
@@ -58,7 +68,7 @@
         touchpad.natural_scroll = false;
 
         sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
-	numlock_by_default = true;
+        numlock_by_default = true;
       };
 
       general = {
@@ -106,32 +116,44 @@
         workspace_swipe = true;
       };
 
-      bind = [
-        "$mod, X, submap, execute"
-        "$mod+SHIFT, C, killactive"
-        "$mod SHIFT, Return, exec, $terminal"
-        "$mod SHIFT, C, killactive,"
-        "$mod SHIFT, Q, exit,"
-        "$mod SHIFT, Space,togglefloating,"
-        "$mod, P, exec, $menu"
-        "$mod SHIFT, P, pseudo,"
-        "$mod SHIFT, J, togglesplit,"
-        "$mod SHIFT, F, fullscreen"
-        "$mod, H, movefocus, l"
-        "$mod, L, movefocus, r"
-        "$mod, K, movefocus, u"
-        "$mod, J, movefocus, d"
-        "$mod,Y,exec,grimblast copy area"
-      ] ++ (
-        # workspaces
-        # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
-        builtins.concatLists (builtins.genList (x:
-          let
-            ws = let c = (x + 1) / 10; in builtins.toString (x + 1 - (c * 10));
-          in [
-            "$mod, ${ws}, workspace, ${toString (x + 1)}"
-            "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
-          ]) 10));
+      bind =
+        [
+          "$mod, X, submap, execute"
+          "$mod+SHIFT, C, killactive"
+          "$mod SHIFT, Return, exec, $terminal"
+          "$mod SHIFT, C, killactive,"
+          "$mod SHIFT, Q, exit,"
+          "$mod SHIFT, Space,togglefloating,"
+          "$mod, P, exec, $menu"
+          "$mod SHIFT, P, pseudo,"
+          "$mod SHIFT, J, togglesplit,"
+          "$mod SHIFT, F, fullscreen"
+          "$mod, H, movefocus, l"
+          "$mod, L, movefocus, r"
+          "$mod, K, movefocus, u"
+          "$mod, J, movefocus, d"
+          "$mod,Y,exec,grimblast copy area"
+        ]
+        ++ (
+          # workspaces
+          # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
+          builtins.concatLists (
+            builtins.genList (
+              x:
+              let
+                ws =
+                  let
+                    c = (x + 1) / 10;
+                  in
+                  builtins.toString (x + 1 - (c * 10));
+              in
+              [
+                "$mod, ${ws}, workspace, ${toString (x + 1)}"
+                "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+              ]
+            ) 10
+          )
+        );
       bindm = [
         "bindm = $mod, mouse:272, movewindow"
         "bindm = $mod, mouse:273, resizewindow"

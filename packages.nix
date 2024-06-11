@@ -6,7 +6,7 @@
     blender-hip
     brave
     cava
-    clamav    
+    clamav
     clang-tools_17
     clang_17
     cli-visualizer
