@@ -1,4 +1,4 @@
-{ inputs, pkgs, lib, ... }: {
+{ lib, ... }: {
   wayland.windowManager.hyprland = {
     enable = true;
 
@@ -43,7 +43,8 @@
         "opacity 0.96, class:.*" # make all windows 4% transparent
         "opacity 1,title:^(.*)(YouTube)(.*)$" # if a window has "YouTube" in its title, remove transparency
         "opacity 1,title:^FINAL FANTASY XIV$"
-        #"nomaximizerequest, class:.*" # You'll probably like this.
+        "suppressevent maximize, class:.*"
+        "forceinput, class:.*"
         "minsize 1 1 , title:^(),class:^(steam)"
         "stayfocused,class:(steam),title:(^$)"
       ];
