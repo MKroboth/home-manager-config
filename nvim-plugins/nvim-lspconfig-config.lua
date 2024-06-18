@@ -1,16 +1,39 @@
 do
-  -- Enable the following language servers
-  --  Feel free to add/remove any LSPs that you want here. Don't forget to also add then to the nvim.nix.
-  --
-  --  Add any additional override configuration in the following tables. Available keys are:
-  --  - cmd (table): Override the default command used to start the server
-  --  - filetypes (table): Override the default list of associated filetypes for the server
-  --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-  --  - settings (table): Override the default settings passed when initializing the server.
   local lsps = {
     nixd = {},
-  }
+    rust_analyzer = {},
+    lua_ls = {
+      settings = {
+        Lua = {
+          runtime = {
+            -- Tell the language server which version of Lua you're using
+            -- (most likely LuaJIT in the case of Neovim)
+            version = 'LuaJIT',
+          },
+          completion = {
+            callSnippet = 'Replace',
+          },
+          diagnostics = {
+            globals = {
+              "vim",
+              "require",
+            }
+          },
+          workspace = {
+            -- Make the server aware of Neovim runtime files
+            library = vim.api.nvim_get_runtime_file("", true),
+          },
+          -- Do not send telemetry data containing a randomized but unique identifier
+          telemetry = {
+            enable = false,
+          },
+          -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+          -- diagnostics = { disable = { 'missing-fields' } },
+        },
+      },
+    }
 
+  }
   -- Brief aside: **What is LSP?**
   --
   -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -63,7 +86,6 @@ do
       -- Jump to the implementation of the word under your cursor.
       --  Useful when your language has ways of declaring types without an actual implementation.
       map('gI', telescope_builtin.lsp_implementations, '[G]oto [I]mplementation')
-
       -- Jump to the type of the word under your cursor.
       --  Useful when you're not sure what type a variable is and you want to see
       --  the definition of its *type*, not where it was *defined*.
@@ -100,10 +122,7 @@ do
       -- When you move your cursor, the highlights will be cleared (the second autocommand).
       local client = vim.lsp.get_client_by_id(event.data.client_id)
       if client and client.server_capabilities.documentHighlightProvider then
-        local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', {
-          clear = false
-        })
-
+        local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
         vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
           buffer = event.buf,
           group = highlight_augroup,

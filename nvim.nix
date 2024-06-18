@@ -12,7 +12,7 @@
       "TextEditor"
     ];
     mimeType = [
-      "/text/english"
+      "text/english"
       "text/plain"
       "text/x-makefile"
       "text/x-c++hdr"
