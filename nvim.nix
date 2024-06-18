@@ -1,6 +1,40 @@
 { pkgs, ... }:
 
 {
+  # Install an actually working neovim wrapper
+  xdg.desktopEntries."neovim-giga-wrapper" = {
+    name = "NeoVim Kitty Wrapper";
+    exec = "kitty nvim -- %u";
+    terminal = false;
+    type = "Application";
+    categories = [
+      "Utility"
+      "TextEditor"
+    ];
+    mimeType = [
+      "/text/english"
+      "text/plain"
+      "text/x-makefile"
+      "text/x-c++hdr"
+      "text/x-c++src"
+      "text/x-chdr"
+      "text/x-csrc"
+      "text/x-java"
+      "text/x-moc"
+      "text/x-pascal"
+      "text/x-tcl"
+      "text/x-tex"
+      "application/x-shellscript"
+      "text/x-c"
+      "text/x-c++"
+    ];
+  };
+  # Language Servers
+  home.packages = with pkgs; [
+    vscode-langservers-extracted
+    cmake-language-server
+    sumneko-lua-language-server
+  ];
   programs.neovim = {
     enable = true;
     viAlias = true;
@@ -89,7 +123,50 @@
           type = "lua";
         }
         {
-          plugin = vp.nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars);
+          plugin = vp.nvim-treesitter.withPlugins (plugin: ([
+            plugin.lua
+            plugin.luadoc
+            plugin.typescript
+            plugin.toml
+            plugin.ssh_config
+            plugin.sql
+            plugin.scss
+            plugin.rust
+            plugin.ron
+            plugin.printf
+            plugin.php
+            plugin.phpdoc
+            plugin.nix
+            plugin.nasm
+            plugin.markdown
+            plugin.llvm
+            plugin.latex
+            plugin.json
+            plugin.jsdoc
+            plugin.javascript
+            plugin.ini
+            plugin.hyprlang
+            plugin.html
+            plugin.haskell
+            plugin.gpg
+            plugin.glsl
+            plugin.gitignore
+            plugin.gitcommit
+            plugin.gitattributes
+            plugin.git_rebase
+            plugin.git_config
+            plugin.dockerfile
+            plugin.diff
+            plugin.dart
+            plugin.csv
+            plugin.css
+            plugin.cpp
+            plugin.cmake
+            plugin.c
+            plugin.awk
+            plugin.ada
+            plugin.bash
+          ]));
           config = builtins.readFile ./nvim-plugins/treesitter-config.lua;
           type = "lua";
         }
