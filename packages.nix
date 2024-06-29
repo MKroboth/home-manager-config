@@ -27,6 +27,7 @@
     grimblast
     helvum
     hyprpaper
+    jq
     keepassxc
     killall
     kitty
