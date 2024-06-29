@@ -6,6 +6,7 @@
       ''
         [[ ! -f "${./p10k.zsh}" ]] || source ${./p10k.zsh}
         [[ ! -f "~/.cargo/env" ]] || source ~/.cargo/env
+        source <(fzf --zsh)
       '';
     plugins = [
       {
@@ -25,6 +26,7 @@
       raudio = "pactl load-module module-tunnel-sink server=tcp:192.168.0.1:4656";
       hm = "home-manager";
       nxsh = "nix-shell --run zsh";
+      page = "zathura -";
     };
     history.size = 10000;
     history.path = "${config.xdg.dataHome}/zsh/history";

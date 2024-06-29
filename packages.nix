@@ -18,6 +18,7 @@
     evolution-ews
     evolutionWithPlugins
     fd
+    fzf
     git
     gnumake
     godot_4
@@ -53,6 +54,7 @@
     wofi
     yarn
     ymuse
+    zathura
     zsh
   ];
 }
