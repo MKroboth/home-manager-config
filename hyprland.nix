@@ -31,7 +31,7 @@
       "$terminal" = "kitty";
       "$menu" = "wofi --show drun,run";
       "$dmenu" = "wofi --show dmenu";
-      "$fileManager" = "pcmanfm";
+      "$fileManager" = "thunar";
       "$notes" = "obsidian";
       "$chat" = "element-desktop";
       "$editor" = "emacs";
