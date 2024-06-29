@@ -2,6 +2,7 @@
 
 {
   home.packages = with pkgs; [
+    mpvpaper
     blender-hip
     brave
     cava
