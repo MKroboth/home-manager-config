@@ -20,6 +20,7 @@
     evolutionWithPlugins
     fd
     fzf
+    ghostscript_headless
     git
     gnumake
     godot_4
