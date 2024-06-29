@@ -31,8 +31,9 @@ do
           -- diagnostics = { disable = { 'missing-fields' } },
         },
       },
-    }
+    },
 
+    clangd = {},
   }
   -- Brief aside: **What is LSP?**
   --
