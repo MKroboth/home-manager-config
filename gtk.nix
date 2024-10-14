@@ -9,7 +9,7 @@
       package = pkgs.papirus-icon-theme;
     };
     theme = {
-      name = "Catppuccin-Frappe-Compact-Blue-Dark";
+      name = "catppuccin-frappe-compact-blue-dark";
       package = pkgs.catppuccin-gtk.override {
         accents = [ "blue" ];
         size = "compact";
@@ -21,7 +21,7 @@
 
   home.pointerCursor = {
     gtk.enable = true;
-    name = "Catppuccin-Frappe-Blue-Cursors";
+    name = "catppuccin-frappe-blue-cursors";
     package = pkgs.catppuccin-cursors.frappeBlue;
   };
 

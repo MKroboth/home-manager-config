@@ -31,9 +31,12 @@
   };
   # Language Servers
   home.packages = with pkgs; [
-    vscode-langservers-extracted
+    # vscode-langservers-extracted
     cmake-language-server
     sumneko-lua-language-server
+    gopls
+    pyright
+    yaml-language-server
   ];
   programs.neovim = {
     enable = true;
@@ -166,12 +169,21 @@
             plugin.awk
             plugin.ada
             plugin.bash
+            plugin.yuck
           ]));
           config = builtins.readFile ./nvim-plugins/treesitter-config.lua;
           type = "lua";
         }
         pkgs.vimPlugins.vim-fugitive
       ];
+    extraLuaPackages = ps: [
+      ps.image-nvim
+      ps.magick
+    ];
+    extraPackages = [
+      pkgs.imagemagick
+      pkgs.luajitPackages.magick
+    ];
     extraLuaConfig = builtins.readFile ./vim-extra-config.lua;
   };
 }

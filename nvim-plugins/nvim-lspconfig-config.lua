@@ -1,7 +1,32 @@
 do
   local lsps = {
     nixd = {},
-    rust_analyzer = {},
+    gopls = {},
+    pyright = {},
+    yamlls = {
+      settings = {
+        ["yaml.settings"] = {
+          kubernetes = {
+            versions = { "1.22.5" },
+            files = "*.k8s.yaml"
+          }
+        }
+      },
+    },
+    jsonls = {},
+    rust_analyzer = {
+      settings = {
+        ["rust_analyzer"] = {
+          checkOnSave = {
+            command = "clippy"
+          },
+          procMacro = { enable = true },
+          diagnostics = {
+            enable = true,
+          },
+        }
+      }
+    },
     lua_ls = {
       settings = {
         Lua = {
@@ -116,6 +141,10 @@ do
       --  For example, in C this would take you to the header.
       map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
+      if vim.lsp.diagnostics then
+        map('<leader>]', vim.lsp.diagnostics.goto_next, 'Go to next diagnostic')
+        map('<leader>[', vim.lsp.diagnostics.goto_prev, 'Go to previous diagnostic')
+      end
       -- The following two autocommands are used to highlight references of the
       -- word under your cursor when your cursor rests there for a little while.
       --    See `:help CursorHold` for information about when this is executed

@@ -11,7 +11,7 @@ do --#region Globals
   vim.g.hardmode = true
 
   -- set to true if you want to force yourself to use advanced movements.
-  vim.g.i_hate_myself = true
+  vim.g.i_hate_myself = false
 
   -- Set to true if you have a Nerd Font installed and selected in the terminal
   vim.g.have_nerd_font = true
@@ -139,5 +139,37 @@ do  --#region Basic Autocommands
   })
 end --#endregion
 
+require("image").setup({
+  backend = "kitty",
+  integrations = {
+    markdown = {
+      enabled = true,
+      clear_in_insert_mode = false,
+      download_remote_images = true,
+      only_render_image_at_cursor = false,
+      filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+    },
+    neorg = {
+      enabled = true,
+      clear_in_insert_mode = false,
+      download_remote_images = true,
+      only_render_image_at_cursor = false,
+      filetypes = { "norg" },
+    },
+    html = {
+      enabled = false,
+    },
+    css = {
+      enabled = false,
+    },
+  },
+  max_width = nil,
+  max_height = nil,
+  max_width_window_percentage = nil,
+  max_height_window_percentage = 50,
+  window_overlap_clear_enabled = false,    -- toggles images when windows are overlapped
+  window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
+  editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
+})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et cc=100

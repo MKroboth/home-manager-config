@@ -2,6 +2,9 @@
 
 {
   home.packages = with pkgs; [
+    steam-run
+    fractal
+    libreoffice
     mpvpaper
     blender-hip
     brave
@@ -52,7 +55,9 @@
     typescript
     unzip
     vorta
-    waybar
+    eww
+    socat
+    # waybar
     wl-clipboard-rs
     wofi
     yarn

@@ -40,7 +40,9 @@
       exec-once = [
         "~/bin/video-wallpapers.sh"
         "dex -a"
-        "waybar"
+        "eww --force-wayland open left-bar"
+        "eww --force-wayland open right-bar"
+        "eww --force-wayland open middle-bar"
       ];
 
       monitor = [
@@ -123,7 +125,7 @@
           "$mod+SHIFT, C, killactive"
           "$mod SHIFT, Return, exec, $terminal"
           "$mod SHIFT, C, killactive,"
-          "$mod SHIFT, Q, exit,"
+          # "$mod SHIFT, Q, exit,"
           "$mod SHIFT, Space,togglefloating,"
           "$mod, P, exec, $menu"
           "$mod SHIFT, P, pseudo,"
@@ -134,6 +136,9 @@
           "$mod, K, movefocus, u"
           "$mod, J, movefocus, d"
           "$mod,Y,exec,grimblast copy area"
+          "$mod,W,movecurrentworkspacetomonitor,2"
+          "$mod,E,movecurrentworkspacetomonitor,1"
+          "$mod,R,movecurrentworkspacetomonitor,0"
         ]
         ++ (
           # workspaces
@@ -150,7 +155,7 @@
               in
               [
                 "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+                "$mod SHIFT, ${ws}, movetoworkspacesilent, ${toString (x + 1)}"
               ]
             ) 10
           )
