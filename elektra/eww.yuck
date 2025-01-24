@@ -1,0 +1,167 @@
+; Windows
+
+(defwindow right-bar
+    :monitor 0
+    :geometry (geometry :x "0%"
+                        :y "0%"
+                        :width "100%"
+                        :height "24px"
+                        :anchor "top center")
+    :stacking "fg"
+    :reserve (struts :distance "40px" 
+                     :side "top")
+    :windowtype "dock"
+    :namespace "bar"
+    :exclusive true
+    :focusable false
+    :wm-ignore false
+  (top-bar))
+
+(defwindow middle-bar
+    :monitor 1
+    :geometry (geometry :x "0%"
+                        :y "0%"
+                        :width "100%"
+                        :height "24px"
+                        :anchor "top center")
+    :stacking "fg"
+    :reserve (struts :distance "40px" :side "top")
+    :exclusive true
+    :focusable false
+    :windowtype "dock"
+    :namespace "bar"
+    :wm-ignore false
+  (top-bar))
+
+(defwindow left-bar
+    :monitor 2
+    :geometry (geometry :x "0%"
+                        :y "0%"
+                        :width "100%"
+                        :height "24px"
+                        :anchor "top center")
+    :stacking "fg"
+    :exclusive true
+    :focusable false
+    :reserve (struts :distance "40px" :side "top")
+    :windowtype "dock"
+    :namespace "bar"
+    :wm-ignore false
+  (top-bar))
+
+; Widgets
+
+(defwidget top-bar [] 
+  (box :class "bar-padding"
+    (centerbox 
+      (box :class "container" 
+           :halign "start" 
+           :orientation "horizontal" 
+        (workspaces))
+  (box :class "container"
+       :halign "center"
+       :orientation "horizontal"
+       (window_title))
+  (box :class "container"
+       :halign "end"
+       :space-evenly false
+       (seperator :before "window-title")
+       (audio)
+       (seperator :before "audio")
+       (network)
+       (seperator :before "network")
+       (cpu)
+       (seperator :before "cpu")
+       (memory)
+       (seperator :before "memory")
+       (temps)
+       (seperator :before "temps")
+       (time)
+       (seperator :before "time")
+       (tray)))))
+
+(deflisten workspaces 
+  :initial "[]"
+  "bash ~/.config/eww/scripts/get-workspaces")
+(deflisten current_workspace
+  :initial "1" 
+  "bash ~/.config/eww/scripts/get-active-workspace")
+(defpoll monitor_workspaces
+  :initial "[0,0,0,0,0,0,0,0,0]"
+  :interval "2s"
+  `hyprctl monitors -j | jq '[ .[] | .activeWorkspace.id ]'`)
+
+(defwidget workspaces [] 
+  (box :class "workspaces-widget"
+       (eventbox 
+          :onscroll "bash ~/.config/eww/scripts/change-active-workspace {} ${current_workspace}"
+          :class "workspaces-widget"
+          (box :space-evenly true
+               (label :text "${workspaces}${current_workspace}"
+                      :visible false)
+               (for workspace in workspaces
+                   (eventbox :onclick "hyprctl dispatch workspace ${workspace.id}"
+                      (box :class "workspace-entry ${workspace.windows > 0 ? "occupied" : "empty"}"
+                           (label :text "${workspace.id}"
+                                  :class "workspace-entry-label workspace-${workspace.id} ${workspace.id == current_workspace ? "current" : ""} ${workspace.id == monitor_workspaces[0] ? "monitor-0": ""} ${workspace.id == monitor_workspaces[1] ? "monitor-1": ""} ${workspace.id == monitor_workspaces[2] ? "monitor-2": ""}"))))))))
+
+(defpoll network 
+  :interval "5s" 
+  :initial "null" `ip -j address show dev lagg0`)
+
+(deflisten window 
+  :initial "..." 
+  "sh ~/.config/eww/scripts/get-window-title")
+
+(defwidget window_title [] 
+  (box :class "window-title-widget" 
+    (label :text "${window}")))
+
+(defpoll audio_mute 
+    :interval "1s" 
+    :initial "?"
+  `pactl get-sink-mute 62 | cut -d' ' -f2`)
+
+(defwidget seperator [before] 
+  (literal :content `(label :valign "fill" :vexpand "true" :class "${before}-seperator widget-seperator" :text "")`))
+
+(defwidget audio [] 
+  (box :class "audio-widget-background"
+       (box :class "audio-widget"
+             (label :text {audio_mute == "no"? "󰕾": "󰸈"}))))
+
+(defwidget network []
+  (box :class "network-widget-background"
+       (box :class "network-widget" 
+           :space-evenly false 
+             :spacing 4 
+           (label :text "${network?.[0]?.ifname}: ${network?.[0]?.addr_info?.[0]?.local}/${network?.[0]?.addr_info?.[0]?.prefixlen}") 
+           (network_state))))
+
+(defwidget network_state [] 
+        (label :class "network-state" 
+               :text {network?.[0]?.operstate == "UP"? "󰱓": "󰅛 "}))
+
+(defwidget cpu [] 
+        (box :class "cpu-widget-background" 
+        (box :class "cpu-widget" 
+            (label :text "${round(EWW_CPU.avg,2)}%"))))
+
+(defwidget memory [] 
+  (box :class "memory-widget-background"
+     (box :class "memory-widget"
+         (label :text "${round(EWW_RAM.used_mem_perc,2)}%  "))))
+
+(defwidget temps []
+   (box :class "temps-widget-background" 
+      (box :class "temps-widget"
+        (label :text "${EWW_TEMPS.CORETEMP_PACKAGE_ID_0}°C "))))
+
+(defwidget time [] 
+        (box :class "time-widget-background"
+           (box :class "time-widget"
+              (label :text "${formattime(EWW_TIME, "%R %A", "Europe/Vienna")}"))))
+
+(defwidget tray [] 
+  (box :class "tray-widget-background" 
+       (box :class "tray-widget" (systray))))

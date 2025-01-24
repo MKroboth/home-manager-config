@@ -1,0 +1,125 @@
+// solarized colors
+
+$bar-background-color: #303446;
+$audio-widget-color: #e5c890;
+$network-widget-color: #81c8be;
+$cpu-widget-color: #a6d189;
+$memory-widget-color: #babbf1;
+$temps-widget-color: #ef9f76;
+$time-widget-color: #babbf1;
+$tray-widget-color: #8caaee;
+
+$workspaces-widget-color: #626880;
+$window-title-widget-color: #626880;
+
+$widget-padding-horizontal: 8px;
+$widget-padding-vertical: 0px;
+$bar-opacity: 0.7;
+
+$workspace-text-color: #c6d0f5	;
+$window-title-text-color: $workspace-text-color;
+$active-workspace-indicator-color: #a6d189;
+$monitor-0-indicator-color: #ca9ee6;
+$monitor-1-indicator-color: #e5c890;
+$monitor-2-indicator-color: #8caaee;
+.background {
+	background-color: rgba(
+		red($bar-background-color),
+		green($bar-background-color),
+		blue($bar-background-color),
+	$bar-opacity);
+}
+
+.audio-widget, .network-widget, .cpu-widget, .ram-widget, .temps-widget, .time-widget, .tray-widget, .workspaces-widget, .window-title-widget {
+	padding-top: $widget-padding-vertical;
+	padding-bottom: $widget-padding-vertical;
+	padding-left: $widget-padding-horizontal;
+	padding-right: $widget-padding-horizontal;
+
+	font-family: "Fira Code Mono";
+
+}
+.network-widget {
+	color: $network-widget-color;
+}
+.audio-widget {
+	color: $audio-widget-color;
+	border-bottom-left-radius: 0px;
+}
+.cpu-widget {
+	color: $cpu-widget-color;
+	padding-right: $widget-padding-horizontal + 2px;
+}
+.memory-widget {
+	color: $memory-widget-color;
+	padding-left: $widget-padding-horizontal + 2px;
+}
+.temps-widget {
+	color: $temps-widget-color;
+}
+.time-widget {
+	color: $time-widget-color;
+}
+.tray-widget {
+	color: $tray-widget-color;
+}
+.workspaces-widget {
+	color: $workspace-text-color;
+	background-color: $workspaces-widget-color;
+	border-bottom-right-radius: 8px;
+}
+.window-title-widget {
+	color: $window-title-text-color;
+	background-color: $window-title-widget-color;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+}
+@mixin seperator($prev, $next) {
+	color: $prev;
+	background-color: $next;
+}
+
+.window-title-seperator {
+	@include seperator($audio-widget-color, $audio-widget-color);
+}
+.audio-seperator {
+	@include seperator($audio-widget-color, $network-widget-color);
+}
+
+.network-seperator {
+	@include seperator($network-widget-color, $cpu-widget-color);
+}
+.cpu-seperator {
+	@include seperator($cpu-widget-color, $memory-widget-color);
+}
+.memory-seperator {
+	@include seperator($memory-widget-color, $temps-widget-color);
+}
+.temps-seperator {
+	@include seperator($temps-widget-color, $time-widget-color);
+}
+.time-seperator {
+	@include seperator($time-widget-color, $tray-widget-color);
+}
+.widget-seperator {
+}
+
+.workspace-entry.empty > .workspace-entry-label {
+	color: rgba(41, 44, 60, 0.5);
+} 
+.workspace-entry-label.monitor-0 {
+	border-top: 1px solid;
+	border-top-color: $monitor-0-indicator-color;
+}
+.workspace-entry-label.monitor-1 {
+	border-top: 1px solid;
+	border-top-color: $monitor-1-indicator-color;
+}
+.workspace-entry-label.monitor-2 {
+	border-top: 1px solid;
+	border-top-color: $monitor-2-indicator-color;
+}
+.workspace-entry-label.current {
+	border-bottom: 1px solid;
+	border-bottom-color: $active-workspace-indicator-color;
+}

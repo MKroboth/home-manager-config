@@ -1,0 +1,71 @@
+{ pkgs, ... }:
+
+{
+  home.packages = with pkgs; [
+    gthumb
+    vlc
+    steam-run
+    fractal
+    libreoffice
+    mpvpaper
+    blender-hip
+    brave
+    cava
+    clamav
+    clang-tools_17
+    clang_17
+    cli-visualizer
+    cmake
+    cmake-language-server
+    dex
+    discord
+    element-desktop
+    evince
+    evolution-ews
+    evolutionWithPlugins
+    fd
+    fzf
+    ghostscript_headless
+    git
+    gnumake
+    godot_4
+    grimblast
+    helvum
+    hyprpaper
+    jq
+    keepassxc
+    killall
+    kitty
+    libtool
+    ncmpcpp
+    nixd
+    nixfmt-rfc-style
+    nodejs_22
+    obsidian
+    pandoc
+    pulseaudio
+    razergenie
+    ripgrep
+    rocmPackages.clr
+    rustup
+    shellcheck
+    sonic-pi
+    spice-gtk
+    steam
+    sumneko-lua-language-server
+    texlive.combined.scheme-full
+    typescript
+    unzip
+    vorta
+    eww
+    socat
+    # waybar
+    wl-clipboard-rs
+    wofi
+    yarn
+    ymuse
+    zathura
+    zsh
+    xivlauncher
+  ];
+}
