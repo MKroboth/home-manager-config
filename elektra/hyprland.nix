@@ -1,6 +1,6 @@
 { ... }:
 {
-  wayland.windowManager.hyprland = {
+  wayland.windowManager.hyprland.settings = {
     exec-once = [
       "~/bin/video-wallpapers.sh"
       "dex -a"
