@@ -2,6 +2,10 @@
 {
   wayland.windowManager.hyprland.settings = {
 
+    exec-once = [
+      "dex -a"
+      "eww --force-wayland open right-bar"
+    ];
     monitor = [
       "eDP-1,highres,auto,1"
     ];
