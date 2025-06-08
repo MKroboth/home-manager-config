@@ -37,6 +37,7 @@
     gopls
     pyright
     yaml-language-server
+    elixir-ls
   ];
   programs.neovim = {
     enable = true;
@@ -47,7 +48,7 @@
         vp = pkgs.vimPlugins;
       in
       [
-        # WARN the order of the plugins is important 
+        # WARN the order of the plugins is important
         vp.vim-sleuth
 
         {
@@ -170,6 +171,7 @@
             plugin.ada
             plugin.bash
             plugin.yuck
+            plugin.elixir
           ]));
           config = builtins.readFile ./nvim-plugins/treesitter-config.lua;
           type = "lua";

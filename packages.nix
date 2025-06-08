@@ -2,6 +2,7 @@
 
 {
   home.packages = with pkgs; [
+    firefox
     gthumb
     vlc
     steam-run
@@ -67,5 +68,6 @@
     zathura
     zsh
     xivlauncher
+    jetbrains.idea-ultimate
   ];
 }

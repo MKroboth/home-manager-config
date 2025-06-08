@@ -59,6 +59,11 @@ do
     },
 
     clangd = {},
+    elixirls = {
+      cmd = {
+        "elixir-ls"
+      },
+    },
   }
   -- Brief aside: **What is LSP?**
   --

@@ -2,7 +2,7 @@
 
 {
   programs.zsh = {
-    initExtra = # bash
+    initContent = # bash
       ''
         [[ ! -f "${./p10k.zsh}" ]] || source ${./p10k.zsh}
         [[ ! -f "~/.cargo/env" ]] || source ~/.cargo/env

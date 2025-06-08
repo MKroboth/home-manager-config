@@ -47,6 +47,7 @@
   #
   home.sessionVariables = {
     # EDITOR = "emacs";
+    _JAVA_AWT_WM_NONREPARENTING = 1;
     SSH_ASKPASS = "${pkgs.x11_ssh_askpass}/libexec/ssh-askpass";
   };
 
