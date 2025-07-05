@@ -1,13 +1,16 @@
-{ lib, ... }:
 {
+  lib,
+  utils,
+  catppuccin,
+  ...
+}:
+{
+  catppuccin.enable = true;
   wayland.windowManager.hyprland = {
-    enable = true;
+    enable = lib.mkDefault true;
 
     extraConfig =
       let
-        mkBind = key: action: ''
-          bind=${key},${action}
-          bind=${key},submap,reset'';
         resetSubmap = ''
           bind=,Return,submap,reset
           bind=,Escape,submap,reset
@@ -18,24 +21,24 @@
       lib.concatStrings [
         ''
           submap=execute
-          ${mkBind ",w" "exec,$browser"}
-          ${mkBind ",e" "exec,$editor"}
-          ${mkBind ",n" "exec,$notes"}
-          ${mkBind ",f" "exec,$fileManager"}
+          ${utils.execBind ",w" "$browser"}
+          ${utils.execBind ",e" "$editor"}
+          ${utils.execBind ",n" "$notes"}
+          ${utils.execBind ",f" "$fileManager"}
         ''
         resetSubmap
       ];
 
     settings = {
-      "$mod" = "SUPER";
-      "$terminal" = "kitty";
-      "$menu" = "wofi --show drun,run";
-      "$dmenu" = "wofi --show dmenu";
-      "$fileManager" = "thunar";
-      "$notes" = "obsidian";
-      "$chat" = "element-desktop";
-      "$editor" = "emacs";
-      "$browser" = "brave";
+      "$mod" = lib.mkDefault "SUPER";
+      "$terminal" = lib.mkDefault "kitty";
+      "$menu" = lib.mkDefault "wofi --show drun,run";
+      "$dmenu" = lib.mkDefault "wofi --show dmenu";
+      "$fileManager" = lib.mkDefault "thunar";
+      "$notes" = lib.mkDefault "obsidian";
+      "$chat" = lib.mkDefault "element-desktop";
+      "$editor" = lib.mkDefault "kitty nvim";
+      "$browser" = lib.mkDefault "firefox";
 
       windowrulev2 =
         let
@@ -64,30 +67,30 @@
             "stayfocused,class:(steam),title:(^$)"
             "content game, class:^(steam_app_)(.*)$"
           ];
-          defaultTransparency = 0.04;
+          defaultTransparency = 0.04; # make all windows 4% transparent
         in
         intellijFixes
         ++ (map (window: "opacity 1,${window}") nonTransparentWindows)
         ++ fixSteam
         ++ [
-          "opacity ${toString (1.0 - defaultTransparency)}, class:.*" # make all windows 4% transparent
+          "opacity ${toString (1.0 - defaultTransparency)}, class:.*"
           "suppressevent maximize, class:.*"
           "opacity 1,fullscreen:1"
         ];
 
-      binds = {
-        workspace_center_on = 1;
+      binds = lib.mkDefault {
+        workspace_center_on = lib.mkDefault 1;
       };
 
       input = {
-        kb_layout = "us";
-        kb_options = "caps:escape,compose:menu"; # override capslock with escape
+        kb_layout = lib.mkDefault "us";
+        kb_options = lib.mkDefault "caps:escape,compose:menu"; # override capslock with escape
 
-        follow_mouse = 1;
+        follow_mouse = lib.mkDefault 1;
 
-        touchpad.natural_scroll = false;
+        touchpad.natural_scroll = lib.mkDefault false;
 
-        sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
+        sensitivity = lib.mkDefault 0; # -1.0 - 1.0, 0 means no modification.
       };
 
       general = lib.mkDefault {

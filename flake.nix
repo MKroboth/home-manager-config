@@ -8,10 +8,16 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    catppuccin.url = "github:catppuccin/nix";
   };
 
   outputs =
-    { nixpkgs, home-manager, ... }:
+    {
+      nixpkgs,
+      home-manager,
+      catppuccin,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -19,12 +25,17 @@
         ./home.nix
         ./hyprland.nix
         ./packages.nix
+        catppuccin.homeModules.catppuccin
       ];
     in
     {
+
       homeConfigurations."mkr@elektra" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
+        extraSpecialArgs = {
+          utils = import ./hyprUtils.nix;
+        };
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.
         modules = homeManagerCfgs ++ [
@@ -44,6 +55,9 @@
       homeConfigurations."mkr@erika" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
+        extraSpecialArgs = {
+          utils = import ./hyprUtils.nix;
+        };
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.
         modules = homeManagerCfgs ++ [

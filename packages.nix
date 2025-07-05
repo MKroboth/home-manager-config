@@ -2,13 +2,6 @@
 
 {
   home.packages = with pkgs; [
-    firefox
-    gthumb
-    vlc
-    steam-run
-    fractal
-    libreoffice
-    mpvpaper
     blender-hip
     brave
     cava
@@ -19,29 +12,38 @@
     cmake
     cmake-language-server
     dex
-    discord
     element-desktop
     evince
     evolution-ews
     evolutionWithPlugins
+    eww
     fd
+    firefox
+    fractal
     fzf
+    genact
     ghostscript_headless
+    gimp
     git
     gnumake
     godot_4
     grimblast
+    gthumb
     helvum
     hyprpaper
+    jetbrains.idea-ultimate
     jq
     keepassxc
     killall
     kitty
+    libreoffice
     libtool
+    mpvpaper
     ncmpcpp
     nixd
     nixfmt-rfc-style
     nodejs_22
+    obs-studio
     obsidian
     pandoc
     pulseaudio
@@ -50,24 +52,23 @@
     rocmPackages.clr
     rustup
     shellcheck
+    socat
     sonic-pi
     spice-gtk
     steam
+    steam-run
     sumneko-lua-language-server
     texlive.combined.scheme-full
     typescript
     unzip
+    vlc
     vorta
-    eww
-    socat
-    # waybar
     wl-clipboard-rs
     wofi
+    xivlauncher
     yarn
     ymuse
     zathura
     zsh
-    xivlauncher
-    jetbrains.idea-ultimate
   ];
 }

@@ -1,15 +1,15 @@
 ; Windows
 
 (defwindow right-bar
-    :monitor 0
+    :monitor 3
     :geometry (geometry :x "0%"
                         :y "0%"
                         :width "100%"
                         :height "24px"
-                        :anchor "top center")
+                        :anchor "bottom center")
     :stacking "fg"
     :reserve (struts :distance "40px" 
-                     :side "top")
+                     :side "bottom")
     :windowtype "dock"
     :namespace "bar"
     :exclusive true
@@ -18,14 +18,14 @@
   (top-bar))
 
 (defwindow middle-bar
-    :monitor 1
+    :monitor 4
     :geometry (geometry :x "0%"
                         :y "0%"
                         :width "100%"
                         :height "24px"
-                        :anchor "top center")
+                        :anchor "bottom center")
     :stacking "fg"
-    :reserve (struts :distance "40px" :side "top")
+    :reserve (struts :distance "40px" :side "bottom")
     :exclusive true
     :focusable false
     :windowtype "dock"
@@ -34,16 +34,16 @@
   (top-bar))
 
 (defwindow left-bar
-    :monitor 2
+    :monitor 5
     :geometry (geometry :x "0%"
                         :y "0%"
                         :width "100%"
                         :height "24px"
-                        :anchor "top center")
+                        :anchor "bottom center")
     :stacking "fg"
     :exclusive true
     :focusable false
-    :reserve (struts :distance "40px" :side "top")
+    :reserve (struts :distance "40px" :side "bottom")
     :windowtype "dock"
     :namespace "bar"
     :wm-ignore false
@@ -107,7 +107,7 @@
 
 (defpoll network 
   :interval "5s" 
-  :initial "null" `ip -j address show dev lagg0`)
+  :initial "null" `ip -j address show dev ixe0`)
 
 (deflisten window 
   :initial "..." 

@@ -9,11 +9,25 @@
       "eww --force-wayland open middle-bar"
     ];
 
-    monitor = [
-      "DP-3,1920x1080@60,0x0,1"
-      "DP-2,2560x1440@166,1920x0,1"
-      "DP-1,1920x1080@60,4480x0,1"
-    ];
+    monitor =
+      let
+        colorManagement = "auto";
+        sdrBrightness = "1.2";
+        sdrSaturation = "1.5";
+        qhdScaling = "auto";
+        fhdScaling = "auto";
+        vrrMode = "0";
+      in
+      [
+        "DP-3,2560x1440@166,-2560x0,${qhdScaling}, cm, ${colorManagement}, sdrbrightness, ${sdrBrightness}, sdrsaturation, ${sdrSaturation}, vrr, ${vrrMode}"
+        "DP-6,1920x1080@60,-1920x-1080,${fhdScaling}"
+
+        "DP-2,2560x1440@166,0x0,${qhdScaling}, cm, ${colorManagement}, sdrbrightness, ${sdrBrightness}, sdrsaturation, ${sdrSaturation}, vrr, ${vrrMode}"
+        "DP-5,1920x1080@60,0x-1080,${fhdScaling}"
+
+        "DP-1,2560x1440@166,2560x0,${qhdScaling}, cm, ${colorManagement}, sdrbrightness, ${sdrBrightness}, sdrsaturation, ${sdrSaturation}, vrr, ${vrrMode}"
+        "DP-4,1920x1080@60,1920x-1080,${fhdScaling}"
+      ];
 
     input.numlock_by_default = true;
 
@@ -28,6 +42,14 @@
     };
 
     misc = {
+    };
+
+    render = {
+      cm_fs_passthrough = true;
+    };
+
+    experimental = {
+      xx_color_management_v4 = true;
     };
 
   };
