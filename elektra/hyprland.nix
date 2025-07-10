@@ -32,13 +32,20 @@
     input.numlock_by_default = true;
 
     general = {
-      gaps_in = 0;
-      gaps_out = 0;
+      gaps_in = 2;
+      gaps_out = 2;
       border_size = 1;
+      animation = [
+        "windows, 0"
+      ];
     };
 
     decoration = {
       rounding = 0;
+      blur = {
+        size = 6;
+        passes = 3;
+      };
     };
 
     misc = {
