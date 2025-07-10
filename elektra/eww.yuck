@@ -82,10 +82,10 @@
 
 (deflisten workspaces 
   :initial "[]"
-  "bash ~/.config/eww/scripts/get-workspaces")
+  "~/.config/eww/scripts/get-workspaces")
 (deflisten current_workspace
   :initial "1" 
-  "bash ~/.config/eww/scripts/get-active-workspace")
+  "~/.config/eww/scripts/get-active-workspace")
 (defpoll monitor_workspaces
   :initial "[0,0,0,0,0,0,0,0,0]"
   :interval "2s"
@@ -111,7 +111,7 @@
 
 (deflisten window 
   :initial "..." 
-  "sh ~/.config/eww/scripts/get-window-title")
+  "~/.config/eww/scripts/get-window-title")
 
 (defwidget window_title [] 
   (box :class "window-title-widget" 
