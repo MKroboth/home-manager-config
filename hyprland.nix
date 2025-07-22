@@ -38,7 +38,7 @@
       "$notes" = lib.mkDefault "obsidian";
       "$chat" = lib.mkDefault "element-desktop";
       "$editor" = lib.mkDefault "kitty nvim";
-      "$browser" = lib.mkDefault "firefox";
+      "$browser" = lib.mkDefault "librewolf";
 
       windowrulev2 =
         let

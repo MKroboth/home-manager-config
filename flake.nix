@@ -47,6 +47,7 @@
           ./elektra/kitty.nix
           ./elektra/digital-audio-workstation.nix
           ./elektra/eww.nix
+          ./elektra/packages.nix
         ];
 
         # Optionally use extraSpecialArgs

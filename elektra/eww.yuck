@@ -107,7 +107,7 @@
 
 (defpoll network 
   :interval "5s" 
-  :initial "null" `ip -j address show dev ixe0`)
+  :initial "null" `ip -j address show dev br0`)
 
 (deflisten window 
   :initial "..." 
