@@ -6,15 +6,18 @@
 }:
 
 {
-  catppuccin.gtk.enable = true;
-  catppuccin.enable = true;
-  catppuccin.flavor = "frappe";
+  #  catppuccin.gtk.enable = true;
+  catppuccin = {
+    enable = true;
+    flavor = "frappe";
+    accent = "blue";
+  };
 
   gtk = {
     enable = true;
     iconTheme = {
       name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
+      #      package = pkgs.papirus-icon-theme;
     };
 
     gtk3 = {
@@ -29,14 +32,14 @@
     package = pkgs.catppuccin-cursors.frappeBlue;
   };
 
-  xdg.configFile = {
-    "gtk-4.0/assets".source =
-      "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/assets";
-    "gtk-4.0/gtk.css".source =
-      "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk.css";
-    "gtk-4.0/gtk-dark.css".source =
-      "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk-dark.css";
-  };
+  # xdg.configFile = {
+  #   "gtk-4.0/assets".source =
+  #     "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/assets";
+  #   "gtk-4.0/gtk.css".source =
+  #     "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk.css";
+  #   "gtk-4.0/gtk-dark.css".source =
+  #     "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk-dark.css";
+  # };
   # dconf.settings."org/gnome/desktop/interface" = {
   #   gtk-theme = lib.mkForce "Catppuccin-Frappe";
   #   color-scheme = "prefer-dark";

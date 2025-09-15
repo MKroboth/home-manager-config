@@ -138,51 +138,50 @@
         workspace_swipe = lib.mkDefault true;
       };
 
-      bind =
-        [
-          "SHIFT, F2, pass, class:^(FF Logs Uploader)$"
-          "$mod, X, submap, execute"
-          "$mod+SHIFT, C, killactive"
-          "$mod SHIFT, Return, exec, $terminal"
-          "$mod SHIFT, C, killactive,"
-          # "$mod SHIFT, Q, exit,"
-          "$mod SHIFT, Space,togglefloating,"
-          "$mod, P, exec, $menu"
-          "$mod SHIFT, P, pseudo,"
-          "$mod SHIFT, J, togglesplit,"
-          "$mod SHIFT, F, fullscreen"
-          "$mod, H, movefocus, l"
-          "$mod, L, movefocus, r"
-          "$mod, K, movefocus, u"
-          "$mod, J, movefocus, d"
-          "$mod,Y,exec,grimblast copy area"
-          "$mod SHIFT,W,movecurrentworkspacetomonitor,2"
-          "$mod SHIFT,E,movecurrentworkspacetomonitor,1"
-          "$mod SHIFT,R,movecurrentworkspacetomonitor,0"
-          "$mod ,W,focusmonitor,2"
-          "$mod ,E,focusmonitor,1"
-          "$mod ,R,focusmonitor,0"
-        ]
-        ++ (
-          # workspaces
-          # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
-          builtins.concatLists (
-            builtins.genList (
-              x:
-              let
-                ws =
-                  let
-                    c = (x + 1) / 10;
-                  in
-                  builtins.toString (x + 1 - (c * 10));
-              in
-              [
-                "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                "$mod SHIFT, ${ws}, movetoworkspacesilent, ${toString (x + 1)}"
-              ]
-            ) 10
-          )
-        );
+      bind = [
+        "SHIFT, F2, pass, class:^(FF Logs Uploader)$"
+        "$mod, X, submap, execute"
+        "$mod+SHIFT, C, killactive"
+        "$mod SHIFT, Return, exec, $terminal"
+        "$mod SHIFT, C, killactive,"
+        # "$mod SHIFT, Q, exit,"
+        "$mod SHIFT, Space,togglefloating,"
+        "$mod, P, exec, $menu"
+        "$mod SHIFT, P, pseudo,"
+        "$mod SHIFT, J, togglesplit,"
+        "$mod SHIFT, F, fullscreen"
+        "$mod, H, movefocus, l"
+        "$mod, L, movefocus, r"
+        "$mod, K, movefocus, u"
+        "$mod, J, movefocus, d"
+        "$mod,Y,exec,grimblast copy area"
+        "$mod SHIFT,W,movecurrentworkspacetomonitor,2"
+        "$mod SHIFT,E,movecurrentworkspacetomonitor,1"
+        "$mod SHIFT,R,movecurrentworkspacetomonitor,0"
+        "$mod ,W,focusmonitor,2"
+        "$mod ,E,focusmonitor,1"
+        "$mod ,R,focusmonitor,0"
+      ]
+      ++ (
+        # workspaces
+        # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
+        builtins.concatLists (
+          builtins.genList (
+            x:
+            let
+              ws =
+                let
+                  c = (x + 1) / 10;
+                in
+                builtins.toString (x + 1 - (c * 10));
+            in
+            [
+              "$mod, ${ws}, workspace, ${toString (x + 1)}"
+              "$mod SHIFT, ${ws}, movetoworkspacesilent, ${toString (x + 1)}"
+            ]
+          ) 10
+        )
+      );
       bindm = [
         "bindm = $mod, mouse:272, movewindow"
         "bindm = $mod, mouse:273, resizewindow"

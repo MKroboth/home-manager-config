@@ -2,16 +2,21 @@
 
 {
   home.packages = with pkgs; [
+    devbox
+    lm_sensors
+    graphviz
+    plantuml
     dotnet-sdk
     mono
+    mako
     bottom
     mission-center
     blender-hip
-    brave
     cava
     clamav
     clang-tools_17
     clang_17
+    jetbrains.clion
     cli-visualizer
     cmake
     cmake-language-server
@@ -22,7 +27,6 @@
     evolutionWithPlugins
     eww
     fd
-    firefox
     librewolf
     fractal
     fzf

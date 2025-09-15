@@ -91,6 +91,10 @@
   :interval "2s"
   `hyprctl monitors -j | jq '[ .[] | .activeWorkspace.id ]'`)
 
+(defpoll cpu_temperature
+  :initial "?⁰C"
+  :interval "2s"
+  "~/.config/eww/scripts/get-temperature")
 (defwidget workspaces [] 
   (box :class "workspaces-widget"
        (eventbox 
@@ -155,7 +159,7 @@
 (defwidget temps []
    (box :class "temps-widget-background" 
       (box :class "temps-widget"
-        (label :text "${EWW_TEMPS.CORETEMP_PACKAGE_ID_0}°C "))))
+        (label :text "${cpu_temperature} "))))
 
 (defwidget time [] 
         (box :class "time-widget-background"

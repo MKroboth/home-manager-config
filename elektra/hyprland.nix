@@ -4,6 +4,7 @@
     exec-once = [
       "~/bin/video-wallpapers.sh"
       "dex -a"
+      "mako"
       "eww --force-wayland open left-bar"
       "eww --force-wayland open right-bar"
       "eww --force-wayland open middle-bar"
