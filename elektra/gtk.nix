@@ -1,23 +1,22 @@
 {
   config,
   pkgs,
-  catppuccin,
   ...
 }:
 
 {
   #  catppuccin.gtk.enable = true;
-  catppuccin = {
-    enable = true;
-    flavor = "frappe";
-    accent = "blue";
-  };
+  # catppuccin = {
+  #   enable = true;
+  #   flavor = "frappe";
+  #   accent = "blue";
+  # };
 
   gtk = {
     enable = true;
     iconTheme = {
-      name = "Papirus-Dark";
-      #      package = pkgs.papirus-icon-theme;
+      name = "Arc";
+      package = pkgs.arc-icon-theme;
     };
 
     gtk3 = {

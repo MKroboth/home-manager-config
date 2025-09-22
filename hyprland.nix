@@ -1,11 +1,9 @@
 {
   lib,
   utils,
-  catppuccin,
   ...
 }:
 {
-  catppuccin.enable = true;
   wayland.windowManager.hyprland = {
     enable = lib.mkDefault true;
 

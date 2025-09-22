@@ -8,14 +8,12 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    catppuccin.url = "github:catppuccin/nix";
   };
 
   outputs =
     {
       nixpkgs,
       home-manager,
-      catppuccin,
       ...
     }:
     let
@@ -25,7 +23,6 @@
         ./home.nix
         ./hyprland.nix
         ./packages.nix
-        catppuccin.homeModules.catppuccin
       ];
     in
     {
