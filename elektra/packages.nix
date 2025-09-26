@@ -2,6 +2,8 @@
 
 {
   home.packages = with pkgs; [
+    fastfetch
+    radeontop
     devbox
     lm_sensors
     graphviz
