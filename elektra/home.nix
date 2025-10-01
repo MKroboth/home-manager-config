@@ -61,7 +61,7 @@
   #  /etc/profiles/per-user/mkr/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
+    EDITOR = "nvim";
     SSH_ASKPASS = "${pkgs.x11_ssh_askpass}/libexec/ssh-askpass";
   };
 
@@ -71,10 +71,10 @@
     userEmail = "maximilian@kroboth-home.at";
   };
 
-  programs.emacs = {
-    enable = true;
-    package = pkgs.emacs; # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
-  };
+  # programs.emacs = {
+  # enable = true;
+  # package = pkgs.emacs; # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
+  # };
 
   systemd.user.services.pulseaudio-pipewire-modules = {
     Unit = {

@@ -49,6 +49,25 @@
     :wm-ignore false
   (top-bar))
 
+(defwindow screen-settings
+  :monitor 4
+    :geometry (geometry :x "400px"
+                        :y "0px"
+                        :width "300px"
+                        :anchor "bottom right") 
+(revealer :reveal showMonitorStuff :transition "slideup"
+  (box :orientation "vertical"
+    (box 
+      (label :text "Night Mode") 
+      (checkbox
+                :onchecked   `hyprctl hyprsunset temperature 2500` 
+                :onunchecked `hyprctl hyprsunset temperature 6000`))
+    (box 
+      (label :text "Brightness") 
+      (scale :min 10 :max 100 :onchange `hyprctl hyprsunset gamma {}`))
+  )
+))
+
 ; Widgets
 
 (defwidget top-bar [] 
@@ -66,6 +85,8 @@
        :halign "end"
        :space-evenly false
        (seperator :before "window-title")
+       (monitor)
+       (seperator :before "monitor")
        (audio)
        (seperator :before "audio")
        (network)
@@ -121,6 +142,7 @@
   (box :class "window-title-widget" 
     (label :text "${window}")))
 
+(defvar showMonitorStuff false)
 (defpoll audio_mute 
     :interval "1s" 
     :initial "?"
@@ -128,6 +150,11 @@
 
 (defwidget seperator [before] 
   (literal :content `(label :valign "fill" :vexpand "true" :class "${before}-seperator widget-seperator" :text "")`))
+
+(defwidget monitor [] 
+  (box :class "monitor-widget-background"
+       (box :class "monitor-widget"
+            (checkbox  :onchecked `eww update showMonitorStuff=true` :onunchecked `eww update showMonitorStuff=false` (label :text "󰍹" :onclick `eww open screen-settings`) ))))
 
 (defwidget audio [] 
   (box :class "audio-widget-background"
@@ -163,8 +190,8 @@
 
 (defwidget time [] 
         (box :class "time-widget-background"
-           (box :class "time-widget"
-              (label :text "${formattime(EWW_TIME, "%R %A", "Europe/Vienna")}"))))
+  (tooltip (calendar) (box :class "time-widget"
+              (label :text "${formattime(EWW_TIME, "%R %A", "Europe/Vienna")}")))))
 
 (defwidget tray [] 
   (box :class "tray-widget-background" 

@@ -38,6 +38,10 @@
       "$editor" = lib.mkDefault "kitty nvim";
       "$browser" = lib.mkDefault "librewolf";
 
+      env = [
+        "QT_QPA_PLATFORMTHEME=hyprqt6engine"
+      ];
+
       windowrulev2 =
         let
           intellijFixes = [

@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+eww --force-wayland open left-bar
+eww --force-wayland open right-bar
+eww --force-wayland open middle-bar
+eww --force-wayland open screen-settings
+

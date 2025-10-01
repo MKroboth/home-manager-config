@@ -1,13 +1,36 @@
-{ ... }:
+{ pkgs, ... }:
 {
+  systemd.user = {
+    targets.hyprland = {
+      Unit = {
+        Description = "Hyprland Active";
+        Requires = "graphical-session.target";
+        After = "default.target";
+      };
+    };
+    services.hyprsunset = {
+      Unit = {
+        Description = "Start hyprsunset";
+      };
+      Install = {
+        WantedBy = [ "hyprland.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.hyprsunset}/bin/hyprsunset";
+        Restart = "on-failure";
+        RestartSec = 5;
+        StartLimitBurst = 5;
+      };
+    };
+  };
   wayland.windowManager.hyprland.settings = {
     exec-once = [
+      "systemctl --user start hyprland.target"
+      "systemctl --user start mako.service"
+      "systemctl --user start blueman-applet.service"
       "~/bin/video-wallpapers.sh"
       "dex -a"
-      "mako"
-      "eww --force-wayland open left-bar"
-      "eww --force-wayland open right-bar"
-      "eww --force-wayland open middle-bar"
+      "~/.config/eww/scripts/start-eww"
     ];
 
     monitor =
