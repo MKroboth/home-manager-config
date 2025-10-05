@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./doom.nix
     ./nvim.nix
     ./hyprland.nix
     ./waybar.nix
@@ -76,20 +75,6 @@
   # package = pkgs.emacs; # replace with pkgs.emacs-gtk, or a version provided by the community overlay if desired.
   # };
 
-  systemd.user.services.pulseaudio-pipewire-modules = {
-    Unit = {
-      Description = "Load pipewire-pulseaudio modules";
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-    Service = {
-      ExecStart = "${pkgs.writeShellScript "load-pulseaudio-pipewire-modules" ''
-        #!/run/current-system/sw/bin/bash
-        ${pkgs.pulseaudio}/bin/pactl load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
-      ''}";
-    };
-  };
   dconf.settings = {
     "org/virt-manager/virt-manager/connections" = {
       autoconnect = [ "qemu:///system" ];
