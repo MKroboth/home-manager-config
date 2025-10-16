@@ -24,6 +24,7 @@
     };
   };
   wayland.windowManager.hyprland.settings = {
+    "$fileManager" = "dolphin";
     exec-once = [
       "systemctl --user start hyprland.target"
       "systemctl --user start mako.service"

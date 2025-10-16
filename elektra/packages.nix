@@ -2,6 +2,24 @@
 
 {
   home.packages = with pkgs; [
+    pkgs.yq
+    pkgs.parallel
+    pkgs.lftp
+    pkgs.kdePackages.dolphin
+    pkgs.kdePackages.dolphin-plugins
+    pkgs.kdePackages.kio
+    pkgs.kdePackages.kdf
+    pkgs.kdePackages.kio-fuse
+    pkgs.kdePackages.kio-extras
+    pkgs.kdePackages.kio-admin
+    pkgs.kdePackages.qtwayland
+    pkgs.kdePackages.plasma-integration
+    pkgs.kdePackages.kdegraphics-thumbnailers
+    pkgs.kdePackages.qtsvg
+    pkgs.kdePackages.kservice
+    pkgs.kdePackages.gwenview
+    pkgs.kdePackages.okular
+    shared-mime-info
     hyprsunset
     fastfetch
     radeontop
@@ -19,19 +37,16 @@
     clamav
     clang-tools_17
     clang_17
-    jetbrains.clion
     cli-visualizer
     cmake
     cmake-language-server
     dex
     element-desktop
-    evince
     evolution-ews
     evolutionWithPlugins
     eww
     fd
     librewolf
-    fractal
     fzf
     genact
     ghostscript_headless
@@ -44,6 +59,7 @@
     gthumb
     helvum
     hyprpaper
+    jetbrains.clion
     jetbrains.idea-ultimate
     jetbrains.rider
     jq

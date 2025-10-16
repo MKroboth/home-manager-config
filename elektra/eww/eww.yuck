@@ -1,22 +1,5 @@
 ; Windows
 
-(defwindow right-bar
-    :monitor 3
-    :geometry (geometry :x "0%"
-                        :y "0%"
-                        :width "100%"
-                        :height "24px"
-                        :anchor "bottom center")
-    :stacking "fg"
-    :reserve (struts :distance "40px" 
-                     :side "bottom")
-    :windowtype "dock"
-    :namespace "bar"
-    :exclusive true
-    :focusable false
-    :wm-ignore false
-  (top-bar))
-
 (defwindow middle-bar
     :monitor 4
     :geometry (geometry :x "0%"
@@ -28,22 +11,6 @@
     :reserve (struts :distance "40px" :side "bottom")
     :exclusive true
     :focusable false
-    :windowtype "dock"
-    :namespace "bar"
-    :wm-ignore false
-  (top-bar))
-
-(defwindow left-bar
-    :monitor 5
-    :geometry (geometry :x "0%"
-                        :y "0%"
-                        :width "100%"
-                        :height "24px"
-                        :anchor "bottom center")
-    :stacking "fg"
-    :exclusive true
-    :focusable false
-    :reserve (struts :distance "40px" :side "bottom")
     :windowtype "dock"
     :namespace "bar"
     :wm-ignore false
@@ -101,34 +68,12 @@
        (seperator :before "time")
        (tray)))))
 
-(deflisten workspaces 
-  :initial "[]"
-  "~/.config/eww/scripts/get-workspaces")
-(deflisten current_workspace
-  :initial "1" 
-  "~/.config/eww/scripts/get-active-workspace")
-(defpoll monitor_workspaces
-  :initial "[0,0,0,0,0,0,0,0,0]"
-  :interval "2s"
-  `hyprctl monitors -j | jq '[ .[] | .activeWorkspace.id ]'`)
+(include "./hyprland.yuck")
 
 (defpoll cpu_temperature
   :initial "?⁰C"
   :interval "2s"
   "~/.config/eww/scripts/get-temperature")
-(defwidget workspaces [] 
-  (box :class "workspaces-widget"
-       (eventbox 
-          :onscroll "bash ~/.config/eww/scripts/change-active-workspace {} ${current_workspace}"
-          :class "workspaces-widget"
-          (box :space-evenly true
-               (label :text "${workspaces}${current_workspace}"
-                      :visible false)
-               (for workspace in workspaces
-                   (eventbox :onclick "hyprctl dispatch workspace ${workspace.id}"
-                      (box :class "workspace-entry ${workspace.windows > 0 ? "occupied" : "empty"}"
-                           (label :text "${workspace.id}"
-                                  :class "workspace-entry-label workspace-${workspace.id} ${workspace.id == current_workspace ? "current" : ""} ${workspace.id == monitor_workspaces[0] ? "monitor-0": ""} ${workspace.id == monitor_workspaces[1] ? "monitor-1": ""} ${workspace.id == monitor_workspaces[2] ? "monitor-2": ""}"))))))))
 
 (defpoll network 
   :interval "5s" 
