@@ -33,7 +33,7 @@
       "$menu" = lib.mkDefault "wofi --show drun,run";
       "$dmenu" = lib.mkDefault "wofi --show dmenu";
       "$fileManager" = lib.mkDefault "thunar";
-      "$notes" = lib.mkDefault "obsidian";
+      "$notes" = lib.mkDefault "obsidian --enable-features=UseOzonePlatform --ozone-platform=wayland";
       "$chat" = lib.mkDefault "element-desktop";
       "$editor" = lib.mkDefault "kitty nvim";
       "$browser" = lib.mkDefault "librewolf";
