@@ -4,6 +4,7 @@
   home.packages =
     with pkgs;
     lib.mkDefault [
+      fluffychat
       dotnet-sdk
       mono
       bottom

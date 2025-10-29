@@ -2,6 +2,7 @@
 
 {
   home.packages = with pkgs; [
+    fluffychat
     pkgs.yq
     pkgs.parallel
     pkgs.lftp

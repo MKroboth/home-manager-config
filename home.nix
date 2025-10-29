@@ -6,7 +6,11 @@
   wayland.windowManager.hyprland.enable = true;
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "electron-25.9.0" ];
+    permittedInsecurePackages = [
+      "electron-25.9.0"
+      "olm-3.2.16"
+      "fluffychat-linux-1.27.0"
+    ];
   };
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
