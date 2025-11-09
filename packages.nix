@@ -4,6 +4,9 @@
   home.packages =
     with pkgs;
     lib.mkDefault [
+      btop
+      btop-rocm
+      appimage-run
       fluffychat
       dotnet-sdk
       mono
