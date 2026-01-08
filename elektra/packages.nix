@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   home.packages = with pkgs; [
@@ -24,7 +24,6 @@
     pkgs.kdePackages.gwenview
     pkgs.kdePackages.okular
     shared-mime-info
-    hyprsunset
     fastfetch
     radeontop
     devbox
@@ -61,7 +60,6 @@
     grimblast
     gthumb
     helvum
-    hyprpaper
     jetbrains.clion
     jetbrains.idea-ultimate
     jetbrains.rider

@@ -49,26 +49,26 @@
             #! Fix focus issues when dialogs are opened or closed
             #  "windowdance,class:^(jetbrains-.*)$,floating:1"
             #! Fix splash screen showing in weird places and prevent annoying focus takeovers
-            "center,match:class ^(jetbrains-.*)$,title:^(splash)$,floating:1"
-            "nofocus,match:class ^(jetbrains-.*)$,title:^(splash)$,floating:1"
-            "noborder,class:^(jetbrains-.*)$,title:^(splash)$,floating:1"
+            "center on,match:class ^(jetbrains-.*)$,match:title ^(splash)$,match:float on"
+            "no_focus on,match:class ^(jetbrains-.*)$,match:title ^(splash)$,match:float on"
+            "border_size 0,match:class ^(jetbrains-.*)$,match:title ^(splash)$,match:float on"
 
             #! Center popups/find windows
-            "center,class:^(jetbrains-.*)$,title:^( )$,floating:1"
-            "stayfocused,class:^(jetbrains-.*)$,title:^( )$,floating:1"
-            "noborder,class:^(jetbrains-.*)$,title:^( )$,floating:1"
+            "center on,match:class ^(jetbrains-.*)$,match:title ^( )$,match:float on"
+            "stay_focused on,match:class ^(jetbrains-.*)$,match:title ^( )$,match:float on"
+            "border_size 0,match:class ^(jetbrains-.*)$,match:title ^( )$,match:float on"
             #! Disable window flicker when autocomplete or tooltips appear
-            "nofocus,class:^(jetbrains-.*)$,title:^(win.*)$,floating:1"
+            "no_focus on,match:class ^(jetbrains-.*)$,match:title ^(win.*)$,match:float on"
 
           ];
           nonTransparentWindows = [
-            "title:^(.*)(YouTube)(.*)$"
-            "title:^FINAL FANTASY XIV$"
+            "match:title ^(.*)(YouTube)(.*)$"
+            "match:title ^FINAL FANTASY XIV$"
           ];
           fixSteam = [
-            "minsize 1 1 , title:^(),class:^(steam)"
-            "stayfocused,class:(steam),title:(^$)"
-            "content game, class:^(steam_app_)(.*)$"
+            "min_size 1 1 , match:title ^(),match:class ^(steam)"
+            "stay_focused on,match:class (steam),match:title (^$)"
+            "content game, match:class ^(steam_app_)(.*)$"
           ];
           defaultTransparency = 0.04; # make all windows 4% transparent
         in
@@ -76,9 +76,9 @@
         ++ (map (window: "opacity 1,${window}") nonTransparentWindows)
         ++ fixSteam
         ++ [
-          "opacity ${toString (1.0 - defaultTransparency)}, class:.*"
-          "suppressevent maximize, class:.*"
-          "opacity 1,fullscreen:1"
+          "opacity ${toString (1.0 - defaultTransparency)}, match:class .*"
+          "suppress_event maximize, match:class .*"
+          "opacity 1,match:fullscreen 1"
         ];
 
       binds = lib.mkDefault {

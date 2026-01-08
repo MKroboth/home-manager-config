@@ -8,6 +8,7 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    hyprland.url = "github:hyprwm/Hyprland";
   };
 
   outputs =
@@ -15,7 +16,7 @@
       nixpkgs,
       home-manager,
       ...
-    }:
+    }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -32,6 +33,7 @@
 
         extraSpecialArgs = {
           utils = import ./hyprUtils.nix;
+          inherit inputs;
         };
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.
