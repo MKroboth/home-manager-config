@@ -43,6 +43,8 @@
       helvum
       hyprpaper
       jetbrains.idea-ultimate
+      jetbrains.clion
+      jetbrains.rust-rover
       jetbrains.rider
       jq
       keepassxc

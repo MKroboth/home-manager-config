@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+hyprctl keyword monitor DP-6,disable
+hyprctl keyword monitor DP-5,disable
+hyprctl keyword monitor DP-4,disable
+hyprctl keyword monitor DP-1,disable
+hyprctl keyword monitor DP-3,disable

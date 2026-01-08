@@ -33,7 +33,7 @@
   home.packages = with pkgs; [
     # vscode-langservers-extracted
     cmake-language-server
-    sumneko-lua-language-server
+    lua-language-server
     gopls
     pyright
     yaml-language-server

@@ -69,8 +69,8 @@
 
   programs.git = {
     enable = true;
-    userName = "Maximilian Kroboth";
-    userEmail = "maximilian@kroboth-home.at";
+    settings.user.name = "Maximilian Kroboth";
+    settings.user.email = "maximilian@kroboth-home.at";
   };
 
   # programs.emacs = {

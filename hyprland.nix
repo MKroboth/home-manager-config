@@ -6,6 +6,7 @@
 {
   wayland.windowManager.hyprland = {
     enable = lib.mkDefault true;
+    systemd.enable = false;
 
     extraConfig =
       let
@@ -42,14 +43,14 @@
         "QT_QPA_PLATFORMTHEME=hyprqt6engine"
       ];
 
-      windowrulev2 =
+      windowrule =
         let
           intellijFixes = [
             #! Fix focus issues when dialogs are opened or closed
             #  "windowdance,class:^(jetbrains-.*)$,floating:1"
             #! Fix splash screen showing in weird places and prevent annoying focus takeovers
-            "center,class:^(jetbrains-.*)$,title:^(splash)$,floating:1"
-            "nofocus,class:^(jetbrains-.*)$,title:^(splash)$,floating:1"
+            "center,match:class ^(jetbrains-.*)$,title:^(splash)$,floating:1"
+            "nofocus,match:class ^(jetbrains-.*)$,title:^(splash)$,floating:1"
             "noborder,class:^(jetbrains-.*)$,title:^(splash)$,floating:1"
 
             #! Center popups/find windows
@@ -137,7 +138,7 @@
 
       gestures = lib.mkDefault {
         # See https://wiki.hyprland.org/Configuring/Variables/ for more
-        workspace_swipe = lib.mkDefault true;
+        #workspace_swipe = lib.mkDefault true;
       };
 
       bind = [

@@ -2,6 +2,9 @@
 
 {
   home.packages = with pkgs; [
+    protoc-gen-rust-grpc
+    grpc-tools
+
     fluffychat
     pkgs.yq
     pkgs.parallel
@@ -36,9 +39,8 @@
     blender-hip
     cava
     clamav
-    clang-tools_17
-    clang_17
-    cli-visualizer
+    llvmPackages_19.clang-tools
+    clang_19
     cmake
     cmake-language-server
     dex
@@ -63,6 +65,7 @@
     jetbrains.clion
     jetbrains.idea-ultimate
     jetbrains.rider
+    jetbrains.rust-rover
     jq
     keepassxc
     killall
@@ -88,7 +91,6 @@
     spice-gtk
     steam
     steam-run
-    sumneko-lua-language-server
     texlive.combined.scheme-full
     typescript
     unzip
