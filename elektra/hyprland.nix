@@ -30,15 +30,15 @@
       "systemctl --user start mako.service"
       "systemctl --user start blueman-applet.service"
       "hyprpaper"
-      "~/bin/wallpapers.sh"
       "dex -a"
       "~/.config/eww/scripts/start-eww"
+      "sleep 4; ~/bin/wallpapers.sh"
     ];
 
     monitor =
       let
         colorManagement = "auto";
-        fourKcolorManagement = "wide";
+        fourKcolorManagement = "hdr";
         sdrBrightness = "1.2";
         sdrSaturation = "1.5";
         fourKScaling = "1.5";
@@ -52,7 +52,7 @@
 
         "DP-6,1920x1080@60,0x0,${fhdScaling}"
 
-        "DP-2,3840x2160@166,2560x1440,${fourKScaling}, cm, ${fourKcolorManagement}, sdrbrightness, ${sdrBrightness}, sdrsaturation, ${sdrSaturation}, vrr, ${fourKvrrMode}"
+        "DP-2,3840x2160@166,2560x1440,${fourKScaling}, cm, ${fourKcolorManagement}, sdrbrightness, ${sdrBrightness}, sdrsaturation, ${sdrSaturation}, vrr, ${fourKvrrMode}, bitdepth, 10"
         "DP-5,2560x1440@166,2560x0,${qhdScaling}"
 
         "DP-1,2560x1440@166,5120x1440,${qhdScaling}, cm, ${colorManagement}, sdrbrightness, ${sdrBrightness}, sdrsaturation, ${sdrSaturation}, vrr, ${vrrMode}"

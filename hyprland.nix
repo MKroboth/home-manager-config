@@ -39,6 +39,9 @@
       "$editor" = lib.mkDefault "kitty nvim";
       "$browser" = lib.mkDefault "librewolf";
 
+      xwayland = {
+        force_zero_scaling = true;
+      };
       env = [
         "QT_QPA_PLATFORMTHEME=hyprqt6engine"
       ];
