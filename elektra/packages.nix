@@ -61,7 +61,7 @@
     gthumb
     helvum
     jetbrains.clion
-    jetbrains.idea-ultimate
+    jetbrains.idea
     jetbrains.rider
     jetbrains.rust-rover
     jq
