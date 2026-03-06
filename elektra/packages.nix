@@ -2,9 +2,13 @@
 
 {
   home.packages = with pkgs; [
+    alacritty
+    appimage-run
     protoc-gen-rust-grpc
     grpc-tools
-
+    kdePackages.neochat
+    btop
+    vesktop
     fluffychat
     pkgs.yq
     pkgs.parallel
