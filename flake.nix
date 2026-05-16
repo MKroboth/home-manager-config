@@ -31,15 +31,10 @@
       homeConfigurations."mkr@elektra" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
-        extraSpecialArgs = {
-          utils = import ./hyprUtils.nix;
-          inherit inputs;
-        };
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.
         modules = homeManagerCfgs ++ [
           ./elektra/nvim.nix
-          ./elektra/hyprland.nix
           ./elektra/waybar.nix
           ./elektra/zsh.nix
           ./elektra/gtk.nix
@@ -62,7 +57,6 @@
         # the path to your home.nix.
         modules = homeManagerCfgs ++ [
           ./erika/nvim.nix
-          ./erika/hyprland.nix
           ./erika/waybar.nix
           ./erika/zsh.nix
           ./erika/gtk.nix

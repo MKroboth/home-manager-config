@@ -64,7 +64,7 @@
   #
   home.sessionVariables = {
     EDITOR = "nvim";
-    SSH_ASKPASS = "${pkgs.x11_ssh_askpass}/libexec/ssh-askpass";
+    #SSH_ASKPASS = "${pkgs.x11_ssh_askpass}/libexec/ssh-askpass";
   };
 
   programs.git = {

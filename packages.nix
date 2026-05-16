@@ -4,6 +4,7 @@
   home.packages =
     with pkgs;
     lib.mkDefault [
+      maven3
       btop
       btop-rocm
       appimage-run
@@ -24,8 +25,8 @@
       dex
       element-desktop
       evince
-      evolution-ews
-      evolutionWithPlugins
+      # evolution-ews
+      #evolutionWithPlugins
       eww
       fd
       firefox

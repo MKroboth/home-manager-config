@@ -199,10 +199,6 @@ do
   capabilities = vim.tbl_deep_extend('force', capabilities,
     require('cmp_nvim_lsp').default_capabilities())
 
-
-
-  local lspconfig = require('lspconfig')
-
   do
     -- Directory prefix of all package directories
     local package_prefix = "/nix/store/"
@@ -275,7 +271,8 @@ do
 
     for lsp, args in pairs(lsps) do
       -- load all lsps
-      lspconfig[lsp].setup(args)
+      vim.lsp.config(lsp, args)
+      vim.lsp.enable(lsp)
     end
   end
 end

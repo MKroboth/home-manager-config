@@ -1,7 +1,16 @@
 { pkgs, inputs, ... }:
-
+let
+  jdkWithFX = pkgs.openjdk21.override {
+    enableJavaFX = true; # for JavaFX
+  };
+in
 {
   home.packages = with pkgs; [
+    github-cli
+    google-chrome
+    claude-code
+    maven3
+    meson
     alacritty
     appimage-run
     protoc-gen-rust-grpc
@@ -105,5 +114,6 @@
     ymuse
     zathura
     zsh
+    jdkWithFX
   ];
 }
