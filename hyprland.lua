@@ -38,6 +38,7 @@ hl.config({
 		touchpad = {
 			natural_scroll = false,
 		},
+		numlock_by_default = true,
 	},
 	binds = {
 		workspace_center_on = 1
@@ -125,7 +126,7 @@ for workspace_id = 1, 10 do
 	hl.bind("SUPER + SHIFT +" .. workspace_key, hl.dsp.window.move({ workspace = workspace_id, follow = false }))
 end
 
-hl.define_submap("execute", function()
+hl.define_submap("execute", "reset", function()
 	hl.bind("W", hl.dsp.exec_cmd(browser))
 	hl.bind("E", hl.dsp.exec_cmd(editor))
 	hl.bind("H", hl.dsp.exec_cmd(notes))
@@ -197,6 +198,6 @@ hl.monitor({
 	output = "DP-4",
 	mode = "1920x1080@60",
 	position = "5120x0",
-	scale = 1,
+	scale = 0.75,
 	cm = colorManagement,
 })
