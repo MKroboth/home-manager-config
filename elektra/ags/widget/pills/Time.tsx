@@ -2,13 +2,10 @@ import { Variable } from "astal";
 import { Gtk } from "astal/gtk3";
 import GLib from "gi://GLib";
 
-const TZ = "Europe/Vienna";
-
 function makeClock(format: string) {
   const v = Variable("");
   const tick = () => {
-    const dt = GLib.DateTime.new_now(GLib.TimeZone.new(TZ));
-    v.set(dt.format(format) ?? "");
+    v.set(GLib.DateTime.new_now_local().format(format) ?? "");
     return true;
   };
   tick();
