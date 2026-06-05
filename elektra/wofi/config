@@ -1,0 +1,15 @@
+; Liquid-glass wofi
+width=520
+height=420
+location=center
+prompt=Search
+allow_images=true
+allow_markup=true
+image_size=24
+hide_scroll=true
+no_actions=true
+insensitive=true
+gtk_dark=true
+matching=fuzzy
+layer=overlay
+key_expand=Tab

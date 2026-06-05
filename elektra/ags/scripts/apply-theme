@@ -1,0 +1,53 @@
+#!/usr/bin/env sh
+# Apply a theme mode (dark|light) to external apps. The in-process AGS
+# darkMode Variable is updated separately by lib/theme.ts before this
+# script runs, so no AGS reload is needed here.
+
+mode="${1:-dark}"
+case "$mode" in
+    dark|light) ;;
+    *) mode=dark ;;
+esac
+
+# Keep the cache filename for compatibility with hyprland.lua's startup probe.
+printf '%s' "$mode" > "$HOME/.cache/eww-theme"
+
+if [ "$mode" = "dark" ]; then
+    color_scheme=prefer-dark
+    gtk_theme=adw-gtk3-dark
+    icon_theme=Papirus-Dark
+    hypr_active_border="rgba(7aafffcc)"
+    hypr_inactive_border="rgba(ffffff20)"
+else
+    color_scheme=prefer-light
+    gtk_theme=adw-gtk3
+    icon_theme=Papirus-Light
+    hypr_active_border="rgba(3a6dd1cc)"
+    hypr_inactive_border="rgba(1a1a2230)"
+fi
+
+if command -v dconf >/dev/null 2>&1; then
+    dconf write /org/gnome/desktop/interface/color-scheme "'$color_scheme'"
+    dconf write /org/gnome/desktop/interface/gtk-theme    "'$gtk_theme'"
+    dconf write /org/gnome/desktop/interface/icon-theme   "'$icon_theme'"
+fi
+
+if command -v makoctl >/dev/null 2>&1; then
+    if [ "$mode" = "light" ]; then
+        makoctl mode -a light 2>/dev/null || true
+    else
+        makoctl mode -r light 2>/dev/null || true
+    fi
+fi
+
+if command -v hyprctl >/dev/null 2>&1; then
+    hyprctl eval "return hl.config({ general = { col = { active_border = \"$hypr_active_border\", inactive_border = \"$hypr_inactive_border\" } } })" >/dev/null 2>&1 || true
+fi
+
+KITTY_THEME="$HOME/.config/kitty/themes/$mode.conf"
+KITTY_CURRENT="$HOME/.cache/kitty/current-theme.conf"
+if [ -f "$KITTY_THEME" ]; then
+    mkdir -p "$(dirname "$KITTY_CURRENT")"
+    cp -f "$KITTY_THEME" "$KITTY_CURRENT"
+    pkill -USR1 kitty 2>/dev/null || true
+fi

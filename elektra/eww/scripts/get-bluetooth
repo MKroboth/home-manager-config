@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Output bluetooth state as JSON; reacts to bluez PropertiesChanged.
+
+emit() {
+  powered=$(bluetoothctl show 2>/dev/null | awk -F': ' '/Powered:/{print $2; exit}')
+  mapfile -t devs < <(bluetoothctl devices Connected 2>/dev/null)
+  connected=${#devs[@]}
+  device_name=$(printf '%s\n' "${devs[0]}" | cut -d' ' -f3-)
+  device_json=$(printf '%s' "${device_name}" | jq -Rs .)
+  printf '{"powered": "%s", "connected": %d, "device": %s}\n' \
+    "${powered:-no}" "$connected" "$device_json"
+}
+
+emit
+
+dbus-monitor --system \
+  "type='signal',sender='org.bluez',interface='org.freedesktop.DBus.Properties',member='PropertiesChanged'" \
+  "type='signal',sender='org.bluez',interface='org.freedesktop.DBus.ObjectManager'" \
+  2>/dev/null \
+| while read -r line; do
+    case "$line" in
+      signal*)
+        sleep 0.05
+        emit
+        ;;
+    esac
+  done

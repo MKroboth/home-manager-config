@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2022"],
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "astal/gtk3",
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "astal": ["./node_modules/astal"],
+      "astal/*": ["./node_modules/astal/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "env.d.ts"]
+}

@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+# Restore persisted theme (defaults to dark), then launch AGS.
+mode=$(cat "$HOME/.cache/eww-theme" 2>/dev/null || echo dark)
+"$(dirname "$0")/apply-theme" "$mode"
+
+# The ags wrapper only hardcodes a handful of astal-* typelibs into
+# GI_TYPELIB_PATH. The wrapper uses --prefix semantics, so anything we
+# export here is appended and gjs will pick up the remaining modules
+# (AstalHyprland, AstalWp, AstalBluetooth, AstalMpris, AstalNotifd,
+# AstalTray, AstalBattery, AstalApps, AstalPowerProfiles) from the
+# home-manager profile.
+export GI_TYPELIB_PATH="$HOME/.nix-profile/lib/girepository-1.0${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
+
+# Each astal-* module ships its own GSettings schema under
+# share/gsettings-schemas/<pkg>/glib-2.0/schemas instead of merging into
+# the profile's flat schema dir. Add each package dir as an XDG_DATA_DIRS
+# entry so GLib can resolve schemas like io.astal.notifd.
+for d in "$HOME/.nix-profile/share/gsettings-schemas/"astal-*; do
+    [ -d "$d/glib-2.0/schemas" ] && XDG_DATA_DIRS="$d:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+done
+export XDG_DATA_DIRS
+
+exec ags run "$HOME/.config/ags/app.ts"

@@ -1,0 +1,81 @@
+/* Liquid-glass snippet for Obsidian.
+   Install: for each vault you care about, link this file into the vault's
+   snippets directory, then enable it under Settings → Appearance → CSS snippets.
+     ln -sf ~/.config/home-manager/elektra/app-themes/obsidian-liquid-glass.css \
+            "<Vault>/.obsidian/snippets/liquid-glass.css"
+   Pair with Hyprland window-rule opacity for vesktop/obsidian (already set). */
+
+.theme-dark {
+	/* Surface palette */
+	--background-primary: rgba(12, 12, 18, 0.55);
+	--background-primary-alt: rgba(12, 12, 18, 0.65);
+	--background-secondary: rgba(12, 12, 18, 0.72);
+	--background-secondary-alt: rgba(12, 12, 18, 0.80);
+	--background-modifier-border: rgba(255, 255, 255, 0.12);
+	--background-modifier-hover: rgba(255, 255, 255, 0.06);
+	--background-modifier-active-hover: rgba(122, 175, 255, 0.18);
+
+	/* Text */
+	--text-normal: rgba(255, 255, 255, 0.92);
+	--text-muted: rgba(255, 255, 255, 0.55);
+	--text-faint: rgba(255, 255, 255, 0.35);
+	--text-accent: #7aafff;
+	--text-accent-hover: #b8a4ff;
+
+	/* Interactive */
+	--interactive-accent: #7aafff;
+	--interactive-accent-hover: #b8a4ff;
+
+	/* Code blocks slightly more opaque so syntax stays legible. */
+	--code-background: rgba(255, 255, 255, 0.04);
+	--code-normal: rgba(255, 255, 255, 0.92);
+
+	/* Radii */
+	--radius-s: 8px;
+	--radius-m: 12px;
+	--radius-l: 16px;
+}
+
+/* Workspace chrome */
+.workspace-tab-header-container,
+.workspace-tabs,
+.workspace-leaf,
+.titlebar {
+	background-color: transparent !important;
+}
+
+.workspace-tab-header.is-active {
+	background-color: rgba(122, 175, 255, 0.18) !important;
+	border-radius: 10px !important;
+}
+
+/* Hairline highlight on top edge of panels (specular). */
+.workspace-leaf-content {
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Inputs */
+input[type="text"],
+input[type="search"],
+textarea,
+.search-input-container {
+	background-color: rgba(255, 255, 255, 0.06) !important;
+	border: 1px solid rgba(255, 255, 255, 0.12) !important;
+	border-radius: 10px !important;
+}
+
+input[type="text"]:focus,
+.search-input-container input:focus {
+	border-color: rgba(122, 175, 255, 0.55) !important;
+	box-shadow: 0 0 0 2px rgba(122, 175, 255, 0.18) !important;
+}
+
+/* Buttons */
+button {
+	border-radius: 10px !important;
+}
+
+.mod-cta {
+	background-color: rgba(122, 175, 255, 0.22) !important;
+	border-color: rgba(122, 175, 255, 0.35) !important;
+}

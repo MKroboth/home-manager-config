@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Fetch weather from wttr.in as JSON
+curl -sf "wttr.in/Vienna?format=j1" 2>/dev/null | jq -r '{
+  temp_c: .current_condition[0].temp_C,
+  feels_like: .current_condition[0].FeelsLikeC,
+  desc: .current_condition[0].weatherDesc[0].value,
+  humidity: .current_condition[0].humidity,
+  code: .current_condition[0].weatherCode
+}' 2>/dev/null || echo '{"temp_c":"?","feels_like":"?","desc":"unknown","humidity":"?","code":"0"}'

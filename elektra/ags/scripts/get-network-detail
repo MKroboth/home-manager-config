@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Emit detailed network topology + per-iface rx/tx rates as JSON.
+# Sampled over SAMPLE_MS to compute B/s.
+
+SAMPLE_MS=500
+BRIDGE="br0"
+WIFI="wlp15s0"
+
+ifaces=("$BRIDGE")
+for p in /sys/class/net/"$BRIDGE"/brif/*; do
+  [ -e "$p" ] && ifaces+=("$(basename "$p")")
+done
+for v in /sys/class/net/"$BRIDGE".*; do
+  [ -e "$v" ] && ifaces+=("$(basename "$v")")
+done
+[ -e /sys/class/net/"$WIFI" ] && ifaces+=("$WIFI")
+
+declare -A rx1 tx1 rx2 tx2
+for i in "${ifaces[@]}"; do
+  rx1[$i]=$(cat /sys/class/net/"$i"/statistics/rx_bytes 2>/dev/null || echo 0)
+  tx1[$i]=$(cat /sys/class/net/"$i"/statistics/tx_bytes 2>/dev/null || echo 0)
+done
+sleep "$(awk "BEGIN{print $SAMPLE_MS/1000}")"
+for i in "${ifaces[@]}"; do
+  rx2[$i]=$(cat /sys/class/net/"$i"/statistics/rx_bytes 2>/dev/null || echo 0)
+  tx2[$i]=$(cat /sys/class/net/"$i"/statistics/tx_bytes 2>/dev/null || echo 0)
+done
+
+classify() {
+  case "$1" in
+    "$BRIDGE")        echo bridge ;;
+    "$BRIDGE".[0-9]*) echo vlan ;;
+    "$WIFI")          echo wifi ;;
+    *)                echo port ;;
+  esac
+}
+
+iface_json() {
+  local i=$1 kind
+  kind=$(classify "$i")
+  local state speed ip4 drx dtx
+  state=$(cat /sys/class/net/"$i"/operstate 2>/dev/null || echo down)
+  speed=$(cat /sys/class/net/"$i"/speed 2>/dev/null)
+  case "$speed" in ''|-1) speed=0;; *) ;; esac
+  ip4=$(ip -j addr show "$i" 2>/dev/null | jq -r '.[0].addr_info[]? | select(.family=="inet") | .local' | head -1)
+  ip4_json="\"${ip4}\""
+  drx=$(( (${rx2[$i]:-0} - ${rx1[$i]:-0}) * 1000 / SAMPLE_MS ))
+  dtx=$(( (${tx2[$i]:-0} - ${tx1[$i]:-0}) * 1000 / SAMPLE_MS ))
+  [ $drx -lt 0 ] && drx=0
+  [ $dtx -lt 0 ] && dtx=0
+  printf '{"name":"%s","kind":"%s","state":"%s","speed":%s,"ip":%s,"rx":%d,"tx":%d}' \
+    "$i" "$kind" "$state" "$speed" "$ip4_json" "$drx" "$dtx"
+}
+
+out="["
+sep=""
+for i in "${ifaces[@]}"; do
+  out+="${sep}$(iface_json "$i")"
+  sep=","
+done
+out+="]"
+
+echo "{\"ifaces\":$out}"

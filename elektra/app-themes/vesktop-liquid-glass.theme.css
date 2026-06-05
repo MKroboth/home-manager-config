@@ -1,0 +1,81 @@
+/**
+ * @name Liquid Glass
+ * @description Translucent Discord chrome matching the system eww/wofi/mako theme.
+ * @author mkr
+ * @version 1.0.0
+ *
+ * Auto-symlinked into ~/.config/vesktop/themes/ by elektra/app-themes wiring.
+ * Enable under Vesktop → Settings → Vencord → Themes.
+ */
+
+:root {
+	--lg-bg: rgba(12, 12, 18, 0.55);
+	--lg-bg-strong: rgba(12, 12, 18, 0.72);
+	--lg-border: rgba(255, 255, 255, 0.12);
+	--lg-text: rgba(255, 255, 255, 0.92);
+	--lg-text-muted: rgba(255, 255, 255, 0.55);
+	--lg-accent: #7aafff;
+}
+
+.theme-dark,
+.theme-darker,
+.theme-midnight {
+	/* Background layers */
+	--background-primary: var(--lg-bg) !important;
+	--background-secondary: var(--lg-bg-strong) !important;
+	--background-secondary-alt: rgba(12, 12, 18, 0.78) !important;
+	--background-tertiary: rgba(12, 12, 18, 0.85) !important;
+	--background-accent: rgba(122, 175, 255, 0.18) !important;
+	--background-floating: rgba(12, 12, 18, 0.82) !important;
+	--background-mobile-primary: var(--lg-bg) !important;
+	--background-mobile-secondary: var(--lg-bg-strong) !important;
+	--background-modifier-hover: rgba(255, 255, 255, 0.06) !important;
+	--background-modifier-active: rgba(255, 255, 255, 0.08) !important;
+	--background-modifier-selected: rgba(122, 175, 255, 0.18) !important;
+	--background-modifier-accent: rgba(255, 255, 255, 0.04) !important;
+
+	/* Text */
+	--text-normal: var(--lg-text) !important;
+	--text-muted: var(--lg-text-muted) !important;
+	--text-link: var(--lg-accent) !important;
+	--header-primary: var(--lg-text) !important;
+	--header-secondary: var(--lg-text-muted) !important;
+
+	/* Interactive */
+	--interactive-normal: var(--lg-text-muted) !important;
+	--interactive-hover: var(--lg-text) !important;
+	--interactive-active: var(--lg-text) !important;
+	--interactive-muted: rgba(255, 255, 255, 0.35) !important;
+
+	/* Channel/message accents */
+	--channeltextarea-background: rgba(255, 255, 255, 0.06) !important;
+	--scrollbar-thin-thumb: rgba(255, 255, 255, 0.18) !important;
+	--scrollbar-thin-track: transparent !important;
+	--scrollbar-auto-thumb: rgba(255, 255, 255, 0.18) !important;
+	--scrollbar-auto-track: transparent !important;
+
+	/* Brand */
+	--brand-experiment: var(--lg-accent) !important;
+	--brand-experiment-560: #6a9fef !important;
+}
+
+/* Hairline highlight on the top of major panels (specular). */
+.sidebar_a4d4d9,
+.container_eedf95,
+.container_b2ce9c {
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Rounded selection pills throughout. */
+.containerDefault__91a9d,
+.iconBase_b1d6f6,
+.wrapper__01ef4,
+.layout_a31eb9 {
+	border-radius: 10px !important;
+}
+
+/* Message hover */
+.messageListItem__5126c:hover,
+.cozyMessage__5126c:hover {
+	background-color: rgba(255, 255, 255, 0.04) !important;
+}

@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Output mako notification state as JSON. Event-driven via dbus-monitor for
+# notify/dismiss; slow fallback poll catches state-only changes (DND).
+# Animations:
+#  - new item arrives → emitted with {entering: true} so the revealer mounts
+#    collapsed; a 40ms follow-up flips entering=false, triggering slide-in.
+#  - dismissed item → emitted with {removing: true} so the revealer collapses;
+#    a 250ms follow-up drops it from the list once the slide-out finishes.
+
+ENTER_MS=40
+LEAVE_MS=250
+prev_items='[]'
+
+emit() {
+  raw=$(makoctl list -j 2>/dev/null || echo "[]")
+  dnd=$(makoctl mode 2>/dev/null | grep -c "do-not-disturb")
+  cur=$(echo "$raw" | jq -c '[.[:8][] | {id, app: .app_name, summary, body}]')
+
+  combined=$(jq -nc --argjson prev "$prev_items" --argjson cur "$cur" '
+    (($cur  | map({(.id|tostring): .}) | add) // {}) as $cm
+    | (($prev | map({(.id|tostring): .}) | add) // {}) as $pm
+    | ( [$prev[] | ($cm[.id|tostring] // (. + {removing: true}))]
+        + [$cur[]  | select($pm[.id|tostring] | not) | . + {entering: true}] )
+    | map( (if has("removing") then . else . + {removing: false} end)
+         | (if has("entering") then . else . + {entering: false} end))
+  ')
+
+  count=$(echo "$cur" | jq 'length')
+  echo "{\"count\": $count, \"dnd\": $dnd, \"items\": $combined}"
+  prev_items="$cur"
+
+  has_entering=$(echo "$combined" | jq 'any(.[]; .entering == true)')
+  has_removing=$(echo "$combined" | jq 'any(.[]; .removing == true)')
+
+  if [ "$has_entering" = "true" ]; then
+    (
+      sleep "$(awk "BEGIN{print $ENTER_MS/1000}")"
+      dnd_x=$(makoctl mode 2>/dev/null | grep -c "do-not-disturb")
+      combined_in=$(echo "$combined" | jq -c 'map(.entering = false)')
+      echo "{\"count\": $count, \"dnd\": $dnd_x, \"items\": $combined_in}"
+    ) &
+  fi
+
+  if [ "$has_removing" = "true" ]; then
+    (
+      sleep "$(awk "BEGIN{print $LEAVE_MS/1000}")"
+      dnd_y=$(makoctl mode 2>/dev/null | grep -c "do-not-disturb")
+      cur_clean=$(echo "$cur" | jq -c 'map(. + {removing: false, entering: false})')
+      echo "{\"count\": $count, \"dnd\": $dnd_y, \"items\": $cur_clean}"
+    ) &
+  fi
+}
+
+emit
+
+dbus-monitor --session \
+  "type='method_call',interface='org.freedesktop.Notifications',member='Notify'" \
+  "type='signal',interface='org.freedesktop.Notifications',member='NotificationClosed'" \
+  "type='method_call',interface='org.freedesktop.Notifications',member='CloseNotification'" \
+  "type='signal',path='/fr/emersion/Mako',interface='org.freedesktop.DBus.Properties',member='PropertiesChanged'" \
+  2>/dev/null \
+| while read -r line; do
+    case "$line" in
+      method*|signal*)
+        sleep 0.05
+        emit
+        ;;
+    esac
+  done

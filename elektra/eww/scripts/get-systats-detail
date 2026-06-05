@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Emit per-core CPU usage + k10temp die temps as JSON.
+# Sampled over SAMPLE_MS for accurate per-core deltas.
+
+SAMPLE_MS=300
+
+snap() {
+  awk '/^cpu[0-9]/ {
+    idle = $5 + $6
+    total = 0
+    for (i = 2; i <= NF; i++) total += $i
+    print substr($1, 4), idle, total
+  }' /proc/stat
+}
+
+declare -A idle1 total1 idle2 total2
+while read -r id idle total; do idle1[$id]=$idle; total1[$id]=$total; done < <(snap)
+sleep "$(awk "BEGIN{print $SAMPLE_MS/1000}")"
+while read -r id idle total; do idle2[$id]=$idle; total2[$id]=$total; done < <(snap)
+
+cores="["
+sep=""
+for id in $(printf '%s\n' "${!idle2[@]}" | sort -n); do
+  di=$(( ${idle2[$id]} - ${idle1[$id]} ))
+  dt=$(( ${total2[$id]} - ${total1[$id]} ))
+  if [ "$dt" -gt 0 ]; then
+    u=$(( 100 * (dt - di) / dt ))
+  else
+    u=0
+  fi
+  cores+="${sep}{\"id\":$id,\"usage\":$u}"
+  sep=","
+done
+cores+="]"
+
+temps=$(sensors -j 2>/dev/null | jq -c '{
+  tctl:  (.["k10temp-pci-00c3"].Tctl.temp1_input  // null),
+  tccd1: (.["k10temp-pci-00c3"].Tccd1.temp3_input // null),
+  tccd2: (.["k10temp-pci-00c3"].Tccd2.temp4_input // null),
+  gpu_edge:    (.["amdgpu-pci-0300"].edge.temp1_input     // null),
+  gpu_junction:(.["amdgpu-pci-0300"].junction.temp2_input // null),
+  gpu_mem:     (.["amdgpu-pci-0300"].mem.temp3_input      // null),
+  nic_phy:     (.["ixe0-pci-1100"]."PHY Temperature".temp1_input // null),
+  nic_mac:     (.["ixe0-pci-1100"]."MAC Temperature".temp2_input // null)
+}')
+
+core_rows=$(echo "$cores" | jq -c '[range(0; length; 8) as $i | .[$i:$i+8]]')
+
+read tot avail < <(awk '/^MemTotal:/ {tot=$2} /^MemAvailable:/ {avail=$2; exit} END {print tot, avail}' /proc/meminfo)
+used=$((tot - avail))
+mem_pct=$(( tot > 0 ? 100 * used / tot : 0 ))
+mem_json="{\"total_mib\":$((tot/1024)),\"used_mib\":$((used/1024)),\"pct\":$mem_pct}"
+
+echo "{\"cores\":$cores,\"core_rows\":$core_rows,\"temps\":$temps,\"mem\":$mem_json}"

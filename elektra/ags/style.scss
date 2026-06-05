@@ -2,20 +2,24 @@
 // ║       Liquid Glass Theme             ║
 // ╚══════════════════════════════════════╝
 
-// Base palette — tuned for real Hyprland blur behind every surface
-$glass-bg: rgba(255, 255, 255, 0.06);
-$glass-bg-hover: rgba(255, 255, 255, 0.12);
-$glass-bg-active: rgba(255, 255, 255, 0.18);
-$glass-border: rgba(255, 255, 255, 0.12);
-$glass-border-bright: rgba(255, 255, 255, 0.22);
+// Base palette is sourced from the active adw-gtk3 variant via GTK named
+// colours so it auto-flips when the theme changes between adw-gtk3 and
+// adw-gtk3-dark. unquote() passes the alpha()/@-color expressions through
+// to GTK CSS verbatim instead of letting Sass try to evaluate them.
+$glass-bg: unquote("alpha(@theme_fg_color, 0.06)");
+$glass-bg-hover: unquote("alpha(@theme_fg_color, 0.12)");
+$glass-bg-active: unquote("alpha(@theme_fg_color, 0.18)");
+$glass-border: unquote("alpha(@theme_fg_color, 0.12)");
+$glass-border-bright: unquote("alpha(@theme_fg_color, 0.22)");
 $glass-shadow: rgba(0, 0, 0, 0.25);
 
-$text-primary: rgba(255, 255, 255, 0.92);
-$text-secondary: rgba(255, 255, 255, 0.55);
-$text-dim: rgba(255, 255, 255, 0.35);
+$text-primary: unquote("alpha(@theme_fg_color, 0.92)");
+$text-secondary: unquote("alpha(@theme_fg_color, 0.55)");
+$text-dim: unquote("alpha(@theme_fg_color, 0.35)");
 
-// Accent colors (soft pastels for liquid glass)
-$accent-blue: #7aafff;
+// Accent colours: keep pastels for the soft liquid-glass look; map the
+// primary blue to the live theme accent so highlights track the GTK theme.
+$accent-blue: unquote("@accent_color");
 $accent-purple: #b8a4ff;
 $accent-green: #7adca0;
 $accent-orange: #ffb87a;
@@ -54,15 +58,9 @@ $radius-toggle: 14px;
 }
 
 .bar-glass {
-	background-image: linear-gradient(
-		to bottom,
-		rgba(255, 255, 255, 0.10) 0px,
-		rgba(255, 255, 255, 0.04) 1px,
-		rgba(12, 12, 18, 0.32) 2px,
-		rgba(12, 12, 18, 0.42) 100%
-	);
-	border-top: 1px solid rgba(255, 255, 255, 0.18);
-	box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.05) inset,
+	background-image: unquote("linear-gradient(to bottom, alpha(@theme_fg_color, 0.10) 0px, alpha(@theme_fg_color, 0.04) 1px, alpha(@theme_bg_color, 0.42) 2px, alpha(@theme_bg_color, 0.52) 100%)");
+	border-top: 1px solid unquote("alpha(@theme_fg_color, 0.18)");
+	box-shadow: 0 -1px 0 unquote("alpha(@theme_fg_color, 0.05)") inset,
 	            0 -8px 24px rgba(0, 0, 0, 0.35);
 	padding: 3px 8px;
 }
@@ -172,17 +170,15 @@ $monitor-2-color: $accent-blue;
 // ╚══════════════════════════════════════╝
 
 .cc-panel {
-	background-image: linear-gradient(
-		145deg,
-		rgba(255, 255, 255, 0.10) 0%,
-		rgba(255, 255, 255, 0.03) 30%,
-		rgba(12, 12, 18, 0.50) 100%
-	);
-	border: 1px solid rgba(255, 255, 255, 0.18);
+	// Every gradient stop must stay above Hyprland's popups_ignorealpha=0.2 so
+	// the whole panel surface gets blurred (not just the high-alpha corner).
+	background-color: unquote("alpha(@theme_bg_color, 0.72)");
+	background-image: unquote("linear-gradient(145deg, alpha(@theme_bg_color, 0.65) 0%, alpha(@theme_bg_color, 0.72) 40%, alpha(@theme_bg_color, 0.80) 100%)");
+	border: 1px solid unquote("alpha(@theme_fg_color, 0.18)");
 	border-radius: $radius-panel;
 	padding: 16px;
 	margin-bottom: 4px;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset,
+	box-shadow: 0 1px 0 unquote("alpha(@theme_fg_color, 0.08)") inset,
 	            0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
@@ -325,16 +321,13 @@ $monitor-2-color: $accent-blue;
 
 // ── Glass popup (screen settings) ──
 .glass-popup {
-	background-image: linear-gradient(
-		145deg,
-		rgba(255, 255, 255, 0.10) 0%,
-		rgba(255, 255, 255, 0.03) 30%,
-		rgba(12, 12, 18, 0.50) 100%
-	);
-	border: 1px solid rgba(255, 255, 255, 0.18);
+	// See .cc-panel — gradient stops must stay above ignore_alpha threshold.
+	background-color: unquote("alpha(@theme_bg_color, 0.72)");
+	background-image: unquote("linear-gradient(145deg, alpha(@theme_bg_color, 0.65) 0%, alpha(@theme_bg_color, 0.72) 40%, alpha(@theme_bg_color, 0.80) 100%)");
+	border: 1px solid unquote("alpha(@theme_fg_color, 0.18)");
 	border-radius: $radius-panel;
 	padding: 16px;
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset,
+	box-shadow: 0 1px 0 unquote("alpha(@theme_fg_color, 0.08)") inset,
 	            0 12px 32px rgba(0, 0, 0, 0.45);
 }
 .popup-label {
@@ -423,11 +416,19 @@ $monitor-2-color: $accent-blue;
 // ╚══════════════════════════════════════╝
 
 tooltip {
-	background-color: rgba(12, 12, 18, 0.85);
-	border: 1px solid rgba(255, 255, 255, 0.18);
+	// Every gradient stop must stay above Hyprland's popups_ignorealpha=0.2
+	// so blur_popups covers the entire tooltip, not just the high-alpha corner.
+	background-color: unquote("alpha(@theme_bg_color, 0.78)");
+	background-image: unquote("linear-gradient(145deg, alpha(@theme_bg_color, 0.70) 0%, alpha(@theme_bg_color, 0.78) 40%, alpha(@theme_bg_color, 0.85) 100%)");
+	border: 1px solid unquote("alpha(@theme_fg_color, 0.18)");
 	border-radius: 14px;
 	padding: 4px;
 	color: $text-primary;
+	box-shadow: 0 1px 0 unquote("alpha(@theme_fg_color, 0.08)") inset,
+	            0 12px 32px rgba(0, 0, 0, 0.45);
+}
+tooltip > * {
+	background-color: transparent;
 }
 
 .tt-box {
@@ -477,6 +478,64 @@ tooltip {
 	font-size: 10px;
 	color: $text-secondary;
 	padding-left: 19px;
+}
+
+// ── Calendar (in time-pill tooltip) ──
+calendar {
+	background-color: transparent;
+	color: $text-primary;
+	font-family: $font;
+	font-size: 12px;
+	padding: 8px 10px;
+
+	// Month/year header
+	&.header {
+		color: $text-primary;
+		font-weight: bold;
+		padding: 2px 4px;
+	}
+	&.button {
+		background-color: transparent;
+		background-image: none;
+		border: none;
+		color: $text-secondary;
+		padding: 2px 6px;
+		transition: 200ms ease;
+
+		&:hover { color: $accent-blue; }
+	}
+	// Weekday name row
+	&.day-name {
+		color: $text-secondary;
+		font-size: 10px;
+		padding: 4px 6px 2px;
+	}
+	// Numbered day cells
+	&.day-number {
+		color: $text-primary;
+		padding: 4px 6px;
+		border-radius: 6px;
+		transition: 150ms ease;
+
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.08);
+		}
+	}
+	&.day-number.other-month {
+		color: $text-dim;
+	}
+	&.day-number.today {
+		color: $accent-green;
+		font-weight: bold;
+		text-shadow: 0 0 8px rgba(122, 220, 160, 0.6);
+	}
+	&.day-number:selected {
+		background-color: rgba(122, 175, 255, 0.22);
+		color: $text-primary;
+	}
+
+	// Some GTK builds expose grid lines via these
+	&.highlight { color: $accent-blue; }
 }
 
 // ── Systats tooltip ──

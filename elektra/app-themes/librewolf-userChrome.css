@@ -1,0 +1,88 @@
+/* Liquid-glass userChrome for Librewolf.
+   Install: link this file into your profile, then restart Librewolf.
+     librewolf -P  # pick your profile, note its path under ~/.librewolf/
+     mkdir -p ~/.librewolf/<profile>/chrome
+     ln -sf ~/.config/home-manager/elektra/app-themes/librewolf-userChrome.css \
+            ~/.librewolf/<profile>/chrome/userChrome.css
+   Then enable in about:config:
+     toolkit.legacyUserProfileCustomizations.stylesheets = true */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+:root {
+	--lg-bg: rgba(12, 12, 18, 0.72);
+	--lg-bg-hover: rgba(255, 255, 255, 0.06);
+	--lg-border: rgba(255, 255, 255, 0.12);
+	--lg-text: rgba(255, 255, 255, 0.92);
+	--lg-accent: #7aafff;
+}
+
+/* Whole chrome: translucent + soft border between chrome and content. */
+#navigator-toolbox,
+#main-window,
+#TabsToolbar,
+#nav-bar,
+#PersonalToolbar {
+	background-color: var(--lg-bg) !important;
+	background-image: linear-gradient(
+		to bottom,
+		rgba(255, 255, 255, 0.05) 0%,
+		rgba(255, 255, 255, 0) 100%
+	) !important;
+	color: var(--lg-text) !important;
+	border-color: var(--lg-border) !important;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+#nav-bar {
+	border-bottom: 1px solid var(--lg-border) !important;
+}
+
+/* Address bar / search field. */
+#urlbar,
+#urlbar-background,
+#searchbar {
+	background-color: rgba(255, 255, 255, 0.06) !important;
+	border: 1px solid var(--lg-border) !important;
+	border-radius: 14px !important;
+	color: var(--lg-text) !important;
+}
+
+#urlbar[focused="true"] > #urlbar-background {
+	border-color: rgba(122, 175, 255, 0.55) !important;
+	box-shadow: 0 0 0 2px rgba(122, 175, 255, 0.18) !important;
+}
+
+/* Tabs: rounded pill look with a hairline highlight. */
+.tabbrowser-tab .tab-background {
+	border-radius: 10px !important;
+	margin-block: 4px !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-background {
+	background-color: rgba(122, 175, 255, 0.20) !important;
+	border: 1px solid rgba(122, 175, 255, 0.35) !important;
+}
+
+.tabbrowser-tab:not([selected="true"]) .tab-background:hover {
+	background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Toolbar buttons. */
+toolbarbutton .toolbarbutton-icon {
+	color: var(--lg-text) !important;
+}
+
+toolbarbutton:hover .toolbarbutton-icon {
+	background-color: rgba(255, 255, 255, 0.06) !important;
+	border-radius: 8px !important;
+}
+
+/* Panels (download, hamburger, etc.). */
+panel,
+menupopup,
+.panel-arrowcontent {
+	--arrowpanel-background: var(--lg-bg) !important;
+	--arrowpanel-border-color: var(--lg-border) !important;
+	--arrowpanel-color: var(--lg-text) !important;
+}

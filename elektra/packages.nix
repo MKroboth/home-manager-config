@@ -48,7 +48,7 @@ in
     mako
     bottom
     mission-center
-    blender-hip
+    (blender.override { rocmSupport = true; })
     cava
     clamav
     llvmPackages_19.clang-tools
@@ -72,7 +72,7 @@ in
     godot-mono
     grimblast
     gthumb
-    helvum
+    crosspipe
     jetbrains.clion
     jetbrains.idea
     jetbrains.rider
@@ -86,11 +86,12 @@ in
     mpvpaper
     ncmpcpp
     nixd
-    nixfmt-rfc-style
+    nixfmt
     nodejs_22
     obs-studio
     obsidian
     pandoc
+    playerctl
     pulseaudio
     razergenie
     ripgrep
@@ -98,7 +99,6 @@ in
     rustup
     shellcheck
     socat
-    sonic-pi
     spice-gtk
     steam
     steam-run

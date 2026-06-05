@@ -3,9 +3,9 @@
 
   inputs = {
     # Specify the source of Home Manager and Nixpkgs.
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland.url = "github:hyprwm/Hyprland";
@@ -40,7 +40,11 @@
           ./elektra/gtk.nix
           ./elektra/kitty.nix
           ./elektra/digital-audio-workstation.nix
-          ./elektra/eww.nix
+          ./elektra/ags.nix
+          ./elektra/wofi.nix
+          ./elektra/mako.nix
+          ./elektra/qt.nix
+          ./elektra/app-themes.nix
           ./elektra/packages.nix
         ];
 

@@ -1,14 +1,16 @@
-; Windows
+; ╔══════════════════════════════════════╗
+; ║          Windows                    ║
+; ╚══════════════════════════════════════╝
 
 (defwindow middle-bar
     :monitor 4
     :geometry (geometry :x "0%"
-                        :y "0%"
+                        :y "8px"
                         :width "100%"
-                        :height "24px"
+                        :height "32px"
                         :anchor "bottom center")
     :stacking "fg"
-    :reserve (struts :distance "40px" :side "bottom")
+    :reserve (struts :distance "44px" :side "bottom")
     :exclusive true
     :focusable false
     :windowtype "dock"
@@ -21,123 +23,342 @@
     :geometry (geometry :x "400px"
                         :y "0px"
                         :width "300px"
-                        :anchor "bottom right") 
+                        :anchor "bottom right")
+    :namespace "eww-screen-settings"
 (revealer :reveal showMonitorStuff :transition "slideup"
-  (box :orientation "vertical"
-    (box 
-      (label :text "Night Mode") 
+  (box :class "glass-popup" :orientation "vertical" :spacing 8
+    (box :space-evenly false :spacing 8
+      (label :class "popup-label" :text "Night Mode")
       (checkbox
-                :onchecked   `hyprctl hyprsunset temperature 2500` 
+                :onchecked   `hyprctl hyprsunset temperature 2500`
                 :onunchecked `hyprctl hyprsunset temperature 6000`))
-    (box 
-      (label :text "Brightness") 
-      (scale :min 10 :max 100 :onchange `hyprctl hyprsunset gamma {}`))
+    (box :space-evenly false :spacing 8
+      (label :class "popup-label" :text "Brightness")
+      (scale :class "glass-slider" :min 10 :max 100 :onchange `hyprctl hyprsunset gamma {}`))
   )
 ))
 
-; Widgets
+; ── Control Center (iOS-style) ──
 
-(defwidget top-bar [] 
-  (box :class "bar-padding"
-    (centerbox 
-      (box :class "container" 
-           :halign "start" 
-           :orientation "horizontal" 
+(defwindow cc-closer
+  :monitor 4
+  :geometry (geometry :x "0%" :y "0%" :width "100%" :height "100%")
+  :stacking "fg"
+  :focusable false
+  :namespace "eww-cc-closer"
+  (eventbox :onclick "eww update showControlCenter=false && eww close cc-closer"))
+
+(defwindow control-center
+  :monitor 4
+  :geometry (geometry :x "8px"
+                      :y "8px"
+                      :width "320px"
+                      :anchor "bottom right")
+  :stacking "overlay"
+  :focusable false
+  :namespace "eww-control-center"
+  (revealer :reveal showControlCenter :transition "slideup" :duration "300ms"
+    (box :class "cc-panel" :orientation "vertical" :space-evenly false :spacing 10
+      ; ── Top toggles grid ──
+      (box :class "cc-section" :orientation "vertical" :space-evenly false :spacing 8
+        (box :space-evenly true :spacing 8
+          (cc-toggle
+            :icon {net_status.wired == "up" ? "󰈀" : "󰈂"}
+            :label "Network"
+            :sublabel {net_status.wired == "up" ? net_status.wired_ip : "Off"}
+            :active {net_status.wired == "up"}
+            :action "")
+          (cc-toggle
+            :icon {bt_status.powered == "yes" ? "󰂯" : "󰂲"}
+            :label "Bluetooth"
+            :sublabel {bt_status.connected > 0 ? bt_status.device : bt_status.powered == "yes" ? "On" : "Off"}
+            :active {bt_status.powered == "yes"}
+            :action "bluetoothctl power ${bt_status.powered == 'yes' ? 'off' : 'on'}"))
+        (box :space-evenly true :spacing 8
+          (cc-toggle
+            :icon {notif_state.dnd == 1 ? "󰂛" : "󰂚"}
+            :label "Do Not Disturb"
+            :sublabel {notif_state.dnd == 1 ? "On" : "Off"}
+            :active {notif_state.dnd == 1}
+            :action "makoctl mode -t do-not-disturb")
+          (cc-toggle
+            :icon "󰖔"
+            :label "Night Light"
+            :sublabel {nightlight ? "On" : "Off"}
+            :active nightlight
+            :action "eww update nightlight=${!nightlight} && hyprctl hyprsunset temperature ${nightlight ? '6000' : '2500'}")))
+
+      ; ── Media controls ──
+      (box :class "cc-section cc-media ${media_info.status == "Stopped" ? "cc-media-hidden" : ""}"
+           :visible {media_info.status != "Stopped"}
+           :orientation "vertical" :space-evenly false :spacing 6
+        (box :space-evenly false :spacing 10
+          (label :class "cc-media-icon" :text "󰎆")
+          (box :orientation "vertical" :space-evenly false :hexpand true
+            (label :class "cc-media-title" :halign "start" :limit-width 28 :text {media_info.title})
+            (label :class "cc-media-artist" :halign "start" :limit-width 32 :text {media_info.artist})))
+        (box :class "cc-media-controls" :halign "center" :space-evenly false :spacing 20
+          (button :class "cc-media-btn" :onclick "playerctl previous" "󰒮")
+          (button :class "cc-media-btn cc-media-play" :onclick "playerctl play-pause"
+            {media_info.status == "Playing" ? "󰏤" : "󰐊"})
+          (button :class "cc-media-btn" :onclick "playerctl next" "󰒭")))
+
+      ; ── Sliders ──
+      (box :class "cc-section" :orientation "vertical" :space-evenly false :spacing 10
+        ; Volume
+        (box :space-evenly false :spacing 10
+          (button :class "cc-slider-icon" :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+            {volume.mute == "no" ? "󰕾" : "󰸈"})
+          (scale :class "glass-slider" :hexpand true :min 0 :max 100 :value {volume.volume}
+                 :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%"))
+      )
+
+      ; ── Notifications ──
+      (box :class "cc-section cc-notif-section" :orientation "vertical" :space-evenly false :spacing 6
+        (box :class "cc-notif-header" :space-evenly false
+          (label :class "cc-notif-title" :hexpand true :halign "start"
+                 :text {notif_state.count > 0 ? "Notifications (${notif_state.count})" : "Notifications"})
+          (button :class "cc-notif-dismiss" :onclick "makoctl dismiss -a" :visible {notif_state.count > 0}
+            (label :text "Clear")))
+        (box :orientation "vertical" :space-evenly false :spacing 4
+          (label :text "No notifications" :class "cc-notif-empty"
+                 :visible {notif_state.count == 0})
+          (for notif in {notif_state.items}
+            (revealer :reveal {!notif.removing && !notif.entering} :transition "slideright" :duration "250ms"
+              (eventbox :onclick "makoctl invoke -n ${notif.id}"
+                (box :class "cc-notif-item" :space-evenly false :spacing 8
+                  (label :class "cc-notif-app-icon" :text {
+                    notif.app == "vesktop" ? "󰙯" :
+                    notif.app == "kitty" ? "" :
+                    notif.app == "chrome" ? "" :
+                    notif.app == "librewolf" ? "󰈹" :
+                    notif.app == "steam" ? "󰓓" :
+                    "󰍡"})
+                  (box :orientation "vertical" :space-evenly false :hexpand true
+                    (label :class "cc-notif-summary" :halign "start" :limit-width 30 :text {notif.summary})
+                    (label :class "cc-notif-body" :halign "start" :limit-width 36 :text {notif.body}
+                           :visible {notif.body != ""}))
+                  (button :class "cc-notif-close" :onclick "makoctl dismiss -n ${notif.id}"
+                    (label :text "󰅖"))))))))
+
+      ; ── Bottom row: quick info ──
+      (box :class "cc-section cc-bottom" :space-evenly true :spacing 8
+        (box :class "cc-info-pill" :space-evenly false :spacing 4
+          (label :class "cc-info-icon" :text "")
+          (label :class "cc-info-text" :text "${round(EWW_CPU.avg,0)}%"))
+        (box :class "cc-info-pill" :space-evenly false :spacing 4
+          (label :class "cc-info-icon" :text "")
+          (label :class "cc-info-text" :text "${round(EWW_RAM.used_mem_perc,0)}%"))
+        (box :class "cc-info-pill" :space-evenly false :spacing 4
+          (label :class "cc-info-icon" :text "")
+          (label :class "cc-info-text" :text "${cpu_temperature}"))
+        (box :class "cc-info-pill" :space-evenly false :spacing 4
+          (label :class "cc-info-icon" :text {
+            weather_data.code == "113" ? "󰖙" :
+            weather_data.code == "116" ? "󰖐" :
+            weather_data.code == "119" ? "󰖐" :
+            weather_data.code == "122" ? "󰖐" :
+            weather_data.code == "296" ? "󰖗" :
+            weather_data.code == "302" ? "󰖗" :
+            weather_data.code == "395" ? "󰖘" :
+            "󰖐"})
+          (label :class "cc-info-text" :text "${weather_data.temp_c}°")))
+    )))
+
+; ╔══════════════════════════════════════╗
+; ║          Bar Widget                  ║
+; ╚══════════════════════════════════════╝
+
+(defwidget top-bar []
+  (box :class "bar-glass"
+    (centerbox
+      (box :halign "start" :space-evenly false :spacing 8
         (workspaces))
-  (box :class "container"
-       :halign "center"
-       :orientation "horizontal"
-       (window_title))
-  (box :class "container"
-       :halign "end"
-       :space-evenly false
-       (seperator :before "window-title")
-       (monitor)
-       (seperator :before "monitor")
-       (audio)
-       (seperator :before "audio")
-       (network)
-       (seperator :before "network")
-       (cpu)
-       (seperator :before "cpu")
-       (memory)
-       (seperator :before "memory")
-       (temps)
-       (seperator :before "temps")
-       (time)
-       (seperator :before "time")
-       (tray)))))
+      (box :halign "center" :space-evenly false :spacing 6
+        (window_title))
+      (box :halign "end" :space-evenly false :spacing 4
+        (weather-pill)
+        (audio-pill)
+        (network-pill)
+        (systats-pill)
+        (time-pill)
+        (cc-button)
+        (tray-pill)))))
 
 (include "./hyprland.yuck")
 
+; ╔══════════════════════════════════════╗
+; ║    Polls, Listeners, Variables       ║
+; ╚══════════════════════════════════════╝
+
 (defpoll cpu_temperature
-  :initial "?⁰C"
+  :initial "?°C"
   :interval "2s"
   "~/.config/eww/scripts/get-temperature")
 
-(defpoll network 
-  :interval "5s" 
-  :initial "null" `ip -j address show dev br0`)
-
-(deflisten window 
-  :initial "..." 
+(deflisten window
+  :initial "..."
   "~/.config/eww/scripts/get-window-title")
 
-(defwidget window_title [] 
-  (box :class "window-title-widget" 
-    (label :text "${window}")))
+(deflisten media_info
+  :initial '{"title": "", "artist": "", "status": "Stopped", "art_url": ""}'
+  "~/.config/eww/scripts/get-media")
+
+(deflisten volume
+  :initial '{"volume": 50, "mute": "no"}'
+  "~/.config/eww/scripts/get-volume")
+
+(defpoll weather_data
+  :initial '{"temp_c":"?","feels_like":"?","desc":"loading","humidity":"?","code":"0"}'
+  :interval "600s"
+  "~/.config/eww/scripts/get-weather")
+
+(deflisten notif_state
+  :initial '{"count": 0, "dnd": 0, "items": []}'
+  "~/.config/eww/scripts/get-notifications")
+
+(deflisten bt_status
+  :initial '{"powered": "no", "connected": 0, "device": ""}'
+  "~/.config/eww/scripts/get-bluetooth")
+
+(deflisten net_status
+  :initial '{"wired": "down", "wired_ip": "none", "wifi": "down"}'
+  "~/.config/eww/scripts/get-network-status")
+
+(defpoll net_detail
+  :initial '{"ifaces":[]}'
+  :interval "3s"
+  "~/.config/eww/scripts/get-network-detail")
+
+(defpoll systats_detail
+  :initial '{"cores":[],"core_rows":[],"temps":{},"mem":{"total_mib":0,"used_mib":0,"pct":0}}'
+  :interval "3s"
+  "~/.config/eww/scripts/get-systats-detail")
 
 (defvar showMonitorStuff false)
-(defpoll audio_mute 
-    :interval "1s" 
-    :initial "?"
-  `pactl get-sink-mute 62 | cut -d' ' -f2`)
+(defvar showControlCenter false)
+(defvar nightlight false)
 
-(defwidget seperator [before] 
-  (literal :content `(label :valign "fill" :vexpand "true" :class "${before}-seperator widget-seperator" :text "")`))
+; ╔══════════════════════════════════════╗
+; ║          Bar Pill Widgets            ║
+; ╚══════════════════════════════════════╝
 
-(defwidget monitor [] 
-  (box :class "monitor-widget-background"
-       (box :class "monitor-widget"
-            (checkbox  :onchecked `eww update showMonitorStuff=true` :onunchecked `eww update showMonitorStuff=false` (label :text "󰍹" :onclick `eww open screen-settings`) ))))
+(defwidget window_title []
+  (box :class "pill pill-subtle"
+    (label :class "pill-text" :limit-width 30 :text "${window}")))
 
-(defwidget audio [] 
-  (box :class "audio-widget-background"
-       (box :class "audio-widget"
-             (label :text {audio_mute == "no"? "󰕾": "󰸈"}))))
+(defwidget weather-pill []
+  (tooltip
+    (label :text "${weather_data.desc} | Feels like ${weather_data.feels_like}°C | Humidity: ${weather_data.humidity}%")
+    (box :class "pill" :space-evenly false :spacing 4
+      (label :class "pill-icon" :text {
+        weather_data.code == "113" ? "󰖙" :
+        weather_data.code == "116" ? "󰖐" :
+        weather_data.code == "119" ? "󰖐" :
+        weather_data.code == "122" ? "󰖐" :
+        weather_data.code == "296" ? "󰖗" :
+        weather_data.code == "302" ? "󰖗" :
+        weather_data.code == "395" ? "󰖘" :
+        "󰖐"})
+      (label :class "pill-text" :text "${weather_data.temp_c}°"))))
 
-(defwidget network []
-  (box :class "network-widget-background"
-       (box :class "network-widget" 
-           :space-evenly false 
-             :spacing 4 
-           (label :text "${network?.[0]?.ifname}: ${network?.[0]?.addr_info?.[0]?.local}/${network?.[0]?.addr_info?.[0]?.prefixlen}") 
-           (network_state))))
+(defwidget audio-pill []
+  (eventbox :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+            :onscroll "pactl set-sink-volume @DEFAULT_SINK@ $([ '{}' = 'up' ] && echo '+2%' || echo '-2%')"
+    (box :class "pill" :space-evenly false :spacing 4
+      (label :class "pill-icon" :text {volume.mute == "no" ? "󰕾" : "󰸈"})
+      (label :class "pill-text" :text "${volume.volume}%"))))
 
-(defwidget network_state [] 
-        (label :class "network-state" 
-               :text {network?.[0]?.operstate == "UP"? "󰱓": "󰅛 "}))
+(defwidget iface-row [iface]
+  (box :class "tt-iface-row" :orientation "vertical" :space-evenly false :spacing 1
+    (box :space-evenly false :spacing 10
+      (label :class {iface.state == "up" ? "tt-dot up" : "tt-dot down"} :text "●")
+      (label :class "tt-iface-name" :halign "start" :hexpand true
+             :text "${iface.name}  ${iface.kind}")
+      (label :class "tt-iface-meta"
+             :text {iface.state == "up"
+                      ? (iface.speed > 0 ? "${iface.speed} Mb/s" : "up")
+                      : "down"}))
+    (box :class "tt-iface-sub" :space-evenly false :spacing 12 :visible {iface.state == "up"}
+      (label :halign "start" :hexpand true :text {iface.ip})
+      (label :text "↓ ${iface.rx >= 1048576 ? "${round(iface.rx/1048576.0,1)} MB/s" : iface.rx >= 1024 ? "${round(iface.rx/1024.0,1)} KB/s" : "${iface.rx} B/s"}")
+      (label :text "↑ ${iface.tx >= 1048576 ? "${round(iface.tx/1048576.0,1)} MB/s" : iface.tx >= 1024 ? "${round(iface.tx/1024.0,1)} KB/s" : "${iface.tx} B/s"}"))))
 
-(defwidget cpu [] 
-        (box :class "cpu-widget-background" 
-        (box :class "cpu-widget" 
-            (label :text "${round(EWW_CPU.avg,2)}%"))))
+(defwidget network-pill []
+  (tooltip
+    (box :class "tt-box" :orientation "vertical" :space-evenly false :spacing 8
+      (label :class "tt-title" :halign "start" :text "Network")
+      (box :orientation "vertical" :space-evenly false :spacing 8
+        (for iface in {net_detail.ifaces}
+          (iface-row :iface iface))))
+    (box :class "pill" :space-evenly false :spacing 4
+      (label :class "pill-icon" :text {net_status.wired == "up" ? "󰈀" : "󰈂"})
+      (label :class "pill-text" :text {net_status.wired == "up" ? net_status.wired_ip : "Down"}))))
 
-(defwidget memory [] 
-  (box :class "memory-widget-background"
-     (box :class "memory-widget"
-         (label :text "${round(EWW_RAM.used_mem_perc,2)}%  "))))
+(defwidget cpu-cell [c]
+  (box :class "tt-cpu-cell ${c.usage >= 75 ? "high" : c.usage >= 40 ? "mid" : c.usage >= 10 ? "low" : "idle"}"
+    (label :text "${c.usage < 10 ? " ${c.usage}" : c.usage}")))
 
-(defwidget temps []
-   (box :class "temps-widget-background" 
-      (box :class "temps-widget"
-        (label :text "${cpu_temperature} "))))
+(defwidget systats-pill []
+  (tooltip
+    (box :class "tt-box" :orientation "vertical" :space-evenly false :spacing 10
+      (box :space-evenly false :spacing 12
+        (label :class "tt-title" :halign "start" :hexpand true :text "CPU")
+        (label :class "tt-meta" :text "avg ${round(EWW_CPU.avg,0)}%"))
+      (box :class "tt-cpu-grid" :orientation "vertical" :space-evenly false :spacing 3
+        (for row in {systats_detail.core_rows}
+          (box :space-evenly false :spacing 3
+            (for c in {row}
+              (cpu-cell :c c)))))
 
-(defwidget time [] 
-        (box :class "time-widget-background"
-  (tooltip (calendar) (box :class "time-widget"
-              (label :text "${formattime(EWW_TIME, "%R %A", "Europe/Vienna")}")))))
+      (label :class "tt-title" :halign "start" :text "Temperatures")
+      (box :orientation "vertical" :space-evenly false :spacing 2
+        (label :halign "start" :class "tt-mono"
+               :text "CPU   Tctl ${round(systats_detail.temps.tctl,1)}°  Tccd1 ${round(systats_detail.temps.tccd1,1)}°  Tccd2 ${round(systats_detail.temps.tccd2,1)}°")
+        (label :halign "start" :class "tt-mono"
+               :text "GPU   edge ${round(systats_detail.temps.gpu_edge,0)}°  junction ${round(systats_detail.temps.gpu_junction,0)}°  mem ${round(systats_detail.temps.gpu_mem,0)}°")
+        (label :halign "start" :class "tt-mono"
+               :text "NIC   PHY ${round(systats_detail.temps.nic_phy,0)}°  MAC ${round(systats_detail.temps.nic_mac,0)}°"))
 
-(defwidget tray [] 
-  (box :class "tray-widget-background" 
-       (box :class "tray-widget" (systray))))
+      (label :class "tt-title" :halign "start" :text "Memory")
+      (label :halign "start" :class "tt-mono"
+             :text "${round(systats_detail.mem.used_mib/1024.0,1)} / ${round(systats_detail.mem.total_mib/1024.0,1)} GiB   (${systats_detail.mem.pct}%)"))
+
+    (box :class "pill" :space-evenly false :spacing 8
+      (box :space-evenly false :spacing 3
+        (label :class "pill-icon-dim" :text "")
+        (label :class "pill-text" :text "${round(EWW_CPU.avg,0)}%"))
+      (box :space-evenly false :spacing 3
+        (label :class "pill-icon-dim" :text "󰍛")
+        (label :class "pill-text" :text "${round(EWW_RAM.used_mem_perc,0)}%"))
+      (box :space-evenly false :spacing 3
+        (label :class "pill-icon-dim" :text "")
+        (label :class "pill-text" :text "${cpu_temperature}")))))
+
+(defwidget time-pill []
+  (tooltip (calendar)
+    (box :class "pill" :space-evenly false :spacing 6
+      (label :class "pill-text" :text "${formattime(EWW_TIME, "%R", "Europe/Vienna")}")
+      (label :class "pill-text-dim" :text "${formattime(EWW_TIME, "%a %d %b", "Europe/Vienna")}"))))
+
+(defwidget cc-button []
+  (eventbox :onclick "${showControlCenter ? 'eww update showControlCenter=false && eww close cc-closer' : 'eww update showControlCenter=true && eww open cc-closer'}"
+    (box :class "pill pill-cc" :space-evenly false :spacing 4
+      (label :class "pill-icon" :text {notif_state.dnd == 1 ? "󰂛" : notif_state.count > 0 ? "󰂞" : "󰒓"})
+      (label :class "pill-text" :text {notif_state.count > 0 ? "${notif_state.count}" : ""}
+             :visible {notif_state.count > 0}))))
+
+(defwidget tray-pill []
+  (box :class "pill" (systray)))
+
+; ╔══════════════════════════════════════╗
+; ║      Control Center Widgets          ║
+; ╚══════════════════════════════════════╝
+
+(defwidget cc-toggle [icon label sublabel active action]
+  (eventbox :onclick action
+    (box :class "cc-toggle ${active ? "cc-toggle-active" : ""}"
+         :orientation "vertical" :space-evenly false :spacing 2
+      (label :class "cc-toggle-icon" :text icon)
+      (label :class "cc-toggle-label" :text label)
+      (label :class "cc-toggle-sublabel" :limit-width 14 :text sublabel))))
