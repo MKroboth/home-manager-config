@@ -35,6 +35,7 @@
         # the path to your home.nix.
         modules = homeManagerCfgs ++ [
           ./elektra/nvim.nix
+          ./elektra/starship.nix
           ./elektra/waybar.nix
           ./elektra/zsh.nix
           ./elektra/gtk.nix
@@ -43,6 +44,9 @@
           ./elektra/ags.nix
           ./elektra/wofi.nix
           ./elektra/mako.nix
+          ./elektra/hyprsunset.nix
+          ./elektra/hyprlock.nix
+          ./elektra/hypridle.nix
           ./elektra/qt.nix
           ./elektra/app-themes.nix
           ./elektra/packages.nix

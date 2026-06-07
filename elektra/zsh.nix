@@ -20,17 +20,11 @@
       '';
     initContent = # bash
       ''
-        [[ ! -f "${./p10k.zsh}" ]] || source ${./p10k.zsh}
+        bindkey -v
         [[ ! -f "~/.cargo/env" ]] || source ~/.cargo/env
         source <(fzf --zsh)
       '';
-    plugins = [
-      {
-        name = "powerlevel10k";
-        src = pkgs.zsh-powerlevel10k;
-        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-      }
-    ];
+    plugins = [];
 
     enable = true;
     enableCompletion = true;
