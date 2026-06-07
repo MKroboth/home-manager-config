@@ -1,0 +1,67 @@
+#!/usr/bin/env sh
+# Apply a theme mode (dark|light) to:
+#  - eww darkMode var (drives the .light-mode SCSS class)
+#  - GTK theme + colour scheme + icon theme via gsettings
+#
+# Shared by toggle-theme (interactive) and start-eww (restore on boot).
+
+mode="${1:-dark}"
+case "$mode" in
+    dark|light) ;;
+    *) mode=dark ;;
+esac
+
+if [ "$mode" = "dark" ]; then
+    dark_var=true
+    color_scheme=prefer-dark
+    gtk_theme=adw-gtk3-dark
+    icon_theme=Papirus-Dark
+    hypr_active_border="rgba(7aafffcc)"
+    hypr_inactive_border="rgba(ffffff20)"
+else
+    dark_var=false
+    color_scheme=prefer-light
+    gtk_theme=adw-gtk3
+    icon_theme=Papirus-Light
+    hypr_active_border="rgba(3a6dd1cc)"
+    hypr_inactive_border="rgba(1a1a2230)"
+fi
+
+if command -v dconf >/dev/null 2>&1; then
+    dconf write /org/gnome/desktop/interface/color-scheme "'$color_scheme'"
+    dconf write /org/gnome/desktop/interface/gtk-theme    "'$gtk_theme'"
+    dconf write /org/gnome/desktop/interface/icon-theme   "'$icon_theme'"
+fi
+
+# Mako: toggle the "light" mode it picks up the [mode=light] section.
+# Dark is the default state (no extra mode active).
+if command -v makoctl >/dev/null 2>&1; then
+    if [ "$mode" = "light" ]; then
+        makoctl mode -a light 2>/dev/null || true
+    else
+        makoctl mode -r light 2>/dev/null || true
+    fi
+fi
+
+# Hyprland: live-flip the window borders without a full hyprctl reload.
+# `keyword` only works with the legacy parser; the Lua config uses the
+# new parser so we evaluate an hl.config() call directly.
+if command -v hyprctl >/dev/null 2>&1; then
+    hyprctl eval "return hl.config({ general = { col = { active_border = \"$hypr_active_border\", inactive_border = \"$hypr_inactive_border\" } } })" >/dev/null 2>&1 || true
+fi
+
+# Kitty: swap the included theme file and signal running instances to
+# re-read kitty.conf live (no scrollback loss, no restart).
+KITTY_THEME="$HOME/.config/kitty/themes/$mode.conf"
+KITTY_CURRENT="$HOME/.cache/kitty/current-theme.conf"
+if [ -f "$KITTY_THEME" ]; then
+    mkdir -p "$(dirname "$KITTY_CURRENT")"
+    cp -f "$KITTY_THEME" "$KITTY_CURRENT"
+    pkill -USR1 kitty 2>/dev/null || true
+fi
+
+# Force eww to re-resolve @theme_bg_color/@theme_fg_color against the
+# newly-selected adw-gtk3 variant. Reload resets defvars to their
+# defaults, so darkMode must be re-applied afterwards.
+eww --force-wayland reload >/dev/null 2>&1
+eww --force-wayland update darkMode="$dark_var" >/dev/null 2>&1

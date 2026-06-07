@@ -1,5 +1,5 @@
 local terminal = "kitty"
-local menu = "wofi --show drun,run"
+local menu = "wofi --show drun"
 local browser = "librewolf"
 local editor = "kitty nvim"
 local notes = "obsidian --enable-features=UseOzonePlatform --ozone-platform=wayland"
@@ -244,7 +244,7 @@ hl.bind("SUPER + F12", hl.dsp.exec_cmd("pkill -f 'ags run'"))
 
 -- XF86 multimedia keys. `repeating = true` lets volume keys auto-fire while
 -- held; `locked = true` lets them fire while the screen is locked.
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true, locked = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { repeating = true, locked = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { repeating = true, locked = true })
 hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
 hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
@@ -271,6 +271,8 @@ end)
 hl.on("hyprland.start", function()
 	hl.exec_cmd("systemctl --user start hyprland.target")
 	hl.exec_cmd("systemctl --user start mako.service")
+	-- Polkit agent: makes GUI sudo prompts appear (themed via Qt/Kvantum).
+	hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
 	hl.exec_cmd("systemctl --user start blueman-applet.service")
 	hl.exec_cmd("awww-daemon")
 	hl.exec_cmd("dex -a")

@@ -10,6 +10,7 @@
     swh_lv2
     airwindows-lv2
     rkrlv2
+    soundfont-fluid
   ];
   home.sessionVariables = {
     LV2_PATH = "~/.local/state/nix/profiles/profile/lib/lv2";

@@ -32,6 +32,18 @@ function SystatsTooltip() {
         )}
       </box>
 
+      <box spacing={12}>
+        <label className="tt-title" halign={Gtk.Align.START} hexpand label="GPU" />
+        <label className="tt-meta" label={bind(systats).as(s => s.gpu ? `busy ${s.gpu.busy}%` : "—")} />
+      </box>
+      <label halign={Gtk.Align.START} className="tt-mono"
+             label={bind(systats).as(s => {
+               if (!s.gpu) return "VRAM —";
+               const used = (s.gpu.vram_used / 1073741824).toFixed(1);
+               const tot  = (s.gpu.vram_total / 1073741824).toFixed(1);
+               return `VRAM  ${used} / ${tot} GiB   (${s.gpu.vram_pct}%)`;
+             })} />
+
       <label className="tt-title" halign={Gtk.Align.START} label="Temperatures" />
       <box vertical spacing={2}>
         <label halign={Gtk.Align.START} className="tt-mono"
@@ -84,6 +96,14 @@ export default function SystatsPill() {
       <box spacing={3}>
         <label className="pill-icon-dim" label="󰍛" />
         <label className="pill-text" label={bind(systats).as(s => `${s.mem.pct}%`)} />
+      </box>
+      <box spacing={3}>
+        <label className="pill-icon-dim" label="󰢮" />
+        <label className="pill-text" label={bind(systats).as(s => `${s.gpu?.busy ?? 0}%`)} />
+      </box>
+      <box spacing={3}>
+        <label className="pill-icon-dim" label="" />
+        <label className="pill-text" label={bind(systats).as(s => `${s.gpu?.vram_pct ?? 0}%`)} />
       </box>
       <box spacing={3}>
         <label className="pill-icon-dim" label="" />

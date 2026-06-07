@@ -9,6 +9,7 @@ export default function TrayPill() {
       {bind(tray, "items").as(items =>
         items.map(item => (
           <menubutton
+            className="tray-item"
             tooltipMarkup={bind(item, "tooltipMarkup")}
             usePopover={false}
             actionGroup={bind(item, "actionGroup").as(g => ["dbusmenu", g])}

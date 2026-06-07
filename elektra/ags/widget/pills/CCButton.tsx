@@ -1,12 +1,12 @@
 import { bind, Variable } from "astal";
-import Notifd from "gi://AstalNotifd";
 import { showControlCenter } from "../../state";
+import { notifActive, makoModes } from "../../lib/data";
 
 export default function CCButton() {
-  const notifd = Notifd.get_default();
-  const dnd = Variable(false);
-  // Astal notifd exposes dont-disturb directly.
-  const dndBind = bind(notifd, "dontDisturb");
+  // mako owns the notification bus, so DND state lives in `makoctl mode` and
+  // active popups come from `makoctl list -j` — not AstalNotifd.
+  const dnd = bind(makoModes).as(m => m.includes("do-not-disturb"));
+  const count = bind(notifActive).as(n => n.length);
 
   return (
     <eventbox onClick={() => showControlCenter.set(!showControlCenter.get())}>
@@ -14,14 +14,14 @@ export default function CCButton() {
         <label
           className="pill-icon"
           label={Variable.derive(
-            [dndBind, bind(notifd, "notifications")],
-            (d, n) => d ? "󰂛" : (n.length > 0 ? "󰂞" : "󰒓"),
+            [dnd, count],
+            (d, n) => d ? "󰂛" : (n > 0 ? "󰂞" : "󰒓"),
           )()}
         />
         <label
           className="pill-text"
-          visible={bind(notifd, "notifications").as(n => n.length > 0)}
-          label={bind(notifd, "notifications").as(n => n.length > 0 ? `${n.length}` : "")}
+          visible={count.as(n => n > 0)}
+          label={count.as(n => n > 0 ? `${n}` : "")}
         />
       </box>
     </eventbox>

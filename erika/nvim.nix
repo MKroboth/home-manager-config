@@ -184,6 +184,6 @@
       pkgs.imagemagick
       pkgs.luajitPackages.magick
     ];
-    extraLuaConfig = builtins.readFile ./vim-extra-config.lua;
+    initLua = builtins.readFile ./vim-extra-config.lua;
   };
 }

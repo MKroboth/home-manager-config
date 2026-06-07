@@ -59,7 +59,19 @@ in
     element-desktop
     evolution-ews
     evolutionWithPlugins
-    eww
+    ags
+    astal.io
+    astal.astal3
+    astal.gjs
+    astal.hyprland
+    astal.wireplumber
+    astal.bluetooth
+    astal.mpris
+    astal.notifd
+    astal.tray
+    astal.battery
+    astal.apps
+    astal.powerprofiles
     fd
     librewolf
     fzf
@@ -72,6 +84,7 @@ in
     godot-mono
     grimblast
     gthumb
+    hyprpolkitagent
     crosspipe
     jetbrains.clion
     jetbrains.idea
@@ -102,6 +115,7 @@ in
     spice-gtk
     steam
     steam-run
+    awww
     texlive.combined.scheme-full
     typescript
     unzip
@@ -109,7 +123,6 @@ in
     vorta
     wl-clipboard-rs
     wofi
-    xivlauncher
     yarn
     ymuse
     zathura

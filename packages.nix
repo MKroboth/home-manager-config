@@ -69,6 +69,7 @@
       shellcheck
       socat
       sonic-pi
+      soundfont-fluid
       spice-gtk
       steam
       steam-run

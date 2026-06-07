@@ -1,21 +1,11 @@
 import { bind, Variable } from "astal";
 import Hyprland from "gi://AstalHyprland";
 
-const MONITOR_COLOR_COUNT = 3;
 const WORKSPACE_COUNT = 6;
 const WORKSPACE_IDS = Array.from({ length: WORKSPACE_COUNT }, (_, i) => i + 1);
 
 export default function Workspaces() {
   const hypr = Hyprland.get_default();
-
-  // Per-monitor active workspace map → which colour border each dot gets.
-  const monitorActive = Variable<number[]>([]);
-  const refreshMonitors = () => {
-    monitorActive.set(hypr.get_monitors().map(m => m.get_active_workspace()?.id ?? 0));
-  };
-  refreshMonitors();
-  hypr.connect("notify::focused-workspace", refreshMonitors);
-  hypr.connect("notify::monitors", refreshMonitors);
 
   return (
     <eventbox
@@ -26,27 +16,43 @@ export default function Workspaces() {
         hypr.dispatch("workspace", String(target));
       }}
     >
-      <box spacing={4}>
+      <box spacing={6}>
         {WORKSPACE_IDS.map(id => {
-          const cls = Variable.derive(
-            [bind(hypr, "workspaces"), bind(hypr, "focusedWorkspace"), bind(monitorActive)],
-            (workspaces, focused, monActive) => {
-              const ws = workspaces.find(w => w.id === id);
-              const occupied = (ws?.clients?.length ?? 0) > 0;
-              const current = focused?.id === id;
-              const classes = ["workspace-dot"];
-              if (current) classes.push("current");
-              if (occupied) classes.push("occupied");
-              for (let m = 0; m < MONITOR_COLOR_COUNT; m++) {
-                if (monActive[m] === id) classes.push(`monitor-${m}`);
-              }
-              return classes.join(" ");
-            },
+          const count = Variable.derive(
+            [bind(hypr, "workspaces")],
+            ws => ws.find(w => w.id === id)?.clients?.length ?? 0,
           );
+          const current = Variable.derive(
+            [bind(hypr, "focusedWorkspace")],
+            f => f?.id === id,
+          );
+          const fullscreen = Variable.derive(
+            [bind(hypr, "workspaces")],
+            ws => ws.find(w => w.id === id)?.hasFullscreen ?? false,
+          );
+
+          const itemCls = Variable.derive([current, fullscreen], (c, f) => {
+            const cls = ["workspace-item"];
+            if (c) cls.push("current");
+            if (f) cls.push("fullscreen");
+            return cls.join(" ");
+          });
+          const numCls = Variable.derive([current, count], (cur, n) => {
+            const cls = ["workspace-num"];
+            if (cur) cls.push("current");
+            else if (n === 0) cls.push("empty");
+            return cls.join(" ");
+          });
+
           return (
             <eventbox onClick={() => hypr.dispatch("workspace", String(id))}>
-              <box className="workspace-entry">
-                <label label="●" className={cls()} />
+              <box className={itemCls()} spacing={2}>
+                <label className={numCls()} label={String(id)} />
+                <label
+                  className="workspace-count"
+                  visible={bind(count).as(n => n > 0)}
+                  label={bind(count).as(n => String(n))}
+                />
               </box>
             </eventbox>
           );

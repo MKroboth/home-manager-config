@@ -6,9 +6,9 @@ const MAX = 80;
 export default function WindowTitle() {
   const hypr = Hyprland.get_default();
   return (
-    <box className="pill pill-subtle">
+    <box>
       <label
-        className="pill-text"
+        className="window-title"
         maxWidthChars={30}
         truncate
         label={bind(hypr, "focusedClient").as(c => {

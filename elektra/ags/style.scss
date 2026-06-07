@@ -59,22 +59,42 @@ $radius-toggle: 14px;
 
 .bar-glass {
 	background-image: unquote("linear-gradient(to bottom, alpha(@theme_fg_color, 0.10) 0px, alpha(@theme_fg_color, 0.04) 1px, alpha(@theme_bg_color, 0.42) 2px, alpha(@theme_bg_color, 0.52) 100%)");
-	border-top: 1px solid unquote("alpha(@theme_fg_color, 0.18)");
-	box-shadow: 0 -1px 0 unquote("alpha(@theme_fg_color, 0.05)") inset,
+	border-top: 1px solid unquote("alpha(@theme_fg_color, 0.22)");
+	// 1px highlight just under the top edge catches light like a bevel.
+	// Bottom inner line is omitted now that the bar sits flush with the screen edge.
+	box-shadow: inset 0 1px 0 unquote("alpha(@theme_fg_color, 0.10)"),
 	            0 -8px 24px rgba(0, 0, 0, 0.35);
-	padding: 3px 8px;
+	padding: 7px 16px;
 }
 
 // ── Pills (bar items) ──
 
 .pill {
-	@include glass-surface;
-	@include glass-hover;
-	padding: 2px 10px;
-	margin: 1px 0px;
+	// Material glass: top→bottom gradient gives curvature, inset top line
+	// reads as caught light, inset bottom line as the dark underside, outer
+	// shadow grounds it. No flat 1px border — definition comes from depth.
+	background-image: unquote("linear-gradient(to bottom, alpha(@theme_fg_color, 0.12) 0%, alpha(@theme_fg_color, 0.04) 100%)");
+	background-color: unquote("alpha(@theme_fg_color, 0.04)");
+	border: none;
+	border-radius: $radius-pill;
+	padding: 4px 14px;
+	margin: 0;
 	font-family: $font;
 	font-size: 12px;
 	color: $text-primary;
+	font-feature-settings: "tnum";
+	box-shadow:
+		inset 0  1px 0 unquote("alpha(@theme_fg_color, 0.14)"),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+		0 1px 2px rgba(0, 0, 0, 0.25);
+	transition: 180ms ease;
+	&:hover {
+		background-image: unquote("linear-gradient(to bottom, alpha(@theme_fg_color, 0.18) 0%, alpha(@theme_fg_color, 0.08) 100%)");
+		box-shadow:
+			inset 0  1px 0 unquote("alpha(@theme_fg_color, 0.22)"),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+			0 2px 5px rgba(0, 0, 0, 0.35);
+	}
 }
 .pill-subtle {
 	background-color: transparent;
@@ -100,7 +120,11 @@ $radius-toggle: 14px;
 }
 .pill-text-dim {
 	color: $text-secondary;
-	font-size: 11px;
+	font-size: 10px;
+	// Small-caps + slight tracking turns "Mon 05 Jun" into an instrument-panel label.
+	font-variant: small-caps;
+	font-feature-settings: "tnum";
+	letter-spacing: 0.04em;
 }
 .pill-icon {
 	color: $text-primary;
@@ -121,48 +145,106 @@ $radius-toggle: 14px;
 	}
 }
 
+// Tray menubuttons inherit GTK's default raised-button chrome (background, border,
+// box-shadow, outline). Strip all of it so the icons sit on the parent glass pill.
+.tray-item {
+	background: none;
+	background-color: transparent;
+	background-image: none;
+	border: none;
+	box-shadow: none;
+	outline: none;
+	min-width: 0;
+	min-height: 0;
+	padding: 0 4px;
+	color: $text-primary;
+	transition: 200ms ease;
+
+	&:hover {
+		background-color: $glass-bg;
+		background-image: none;
+	}
+	&:active, &:checked {
+		background-color: $glass-bg-active;
+		background-image: none;
+		box-shadow: none;
+	}
+}
+
 // ╔══════════════════════════════════════╗
 // ║       Workspaces                     ║
 // ╚══════════════════════════════════════╝
 
-$monitor-0-color: $accent-purple;
-$monitor-1-color: $accent-yellow;
-$monitor-2-color: $accent-blue;
-
+// Workspaces widget is a flat container; individual items get material chrome only when focused.
 .workspaces-widget {
-	@include glass-surface;
-	padding: 2px 6px;
-	margin: 1px 0;
+	background: none;
+	background-color: transparent;
+	background-image: none;
+	border: none;
+	padding: 0;
+	margin: 0;
 	font-family: $font;
 }
 
-.workspace-entry {
-	padding: 0 2px;
-	transition: 200ms ease;
-}
-.workspace-dot {
-	font-size: 6px;
-	color: $text-dim;
-	transition: 200ms ease;
+.workspace-item {
+	padding: 2px 8px;
+	border-radius: $radius-pill;
+	transition: 180ms ease;
 
-	&.occupied {
-		font-size: 9px;
-		color: $text-secondary;
-	}
+	// Focused workspace gets the same material lozenge as a .pill — visual
+	// consistency with the rest of the bar, marks "this is where input goes".
 	&.current {
-		font-size: 11px;
+		background-image: unquote("linear-gradient(to bottom, alpha(@theme_fg_color, 0.12) 0%, alpha(@theme_fg_color, 0.04) 100%)");
+		background-color: unquote("alpha(@theme_fg_color, 0.04)");
+		box-shadow:
+			inset 0  1px 0 unquote("alpha(@theme_fg_color, 0.14)"),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+			0 1px 2px rgba(0, 0, 0, 0.25);
+	}
+
+	// Fullscreen state — green underline indicator inside the item.
+	&.fullscreen {
+		box-shadow: inset 0 -2px 0 $accent-green;
+	}
+	// When both focused AND fullscreen, stack the material treatment with the underline.
+	&.current.fullscreen {
+		box-shadow:
+			inset 0  1px 0 unquote("alpha(@theme_fg_color, 0.14)"),
+			inset 0 -2px 0 $accent-green,
+			0 1px 2px rgba(0, 0, 0, 0.25);
+	}
+}
+
+.workspace-num {
+	font-family: $font;
+	font-size: 12px;
+	font-feature-settings: "tnum";
+	color: $text-secondary;
+
+	&.current {
 		color: $accent-green;
-		text-shadow: 0 0 10px rgba(122, 220, 160, 0.7);
+		font-weight: bold;
+		text-shadow: 0 0 8px rgba(122, 220, 160, 0.5);
 	}
-	&.monitor-0 {
-		border-top: 1px solid $monitor-0-color;
+	&.empty {
+		color: $text-dim;
 	}
-	&.monitor-1 {
-		border-top: 1px solid $monitor-1-color;
-	}
-	&.monitor-2 {
-		border-top: 1px solid $monitor-2-color;
-	}
+}
+
+.workspace-count {
+	font-family: $font;
+	font-size: 9px;
+	font-feature-settings: "tnum";
+	color: $text-dim;
+	margin-left: 1px;
+}
+
+// ── Center window title (pill-less, just text on the bar) ──
+.window-title {
+	font-family: $font;
+	font-size: 12px;
+	color: $text-secondary;
+	font-feature-settings: "tnum";
 }
 
 // ╔══════════════════════════════════════╗
@@ -319,6 +401,33 @@ $monitor-2-color: $accent-blue;
 	color: $text-secondary;
 }
 
+// ── Power actions row ──
+.cc-actions {
+	padding: 4px 6px;
+}
+.cc-action-btn {
+	font-family: $font;
+	background-color: rgba(255, 255, 255, 0.04);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	border-radius: 10px;
+	padding: 8px 12px;
+	transition: 200ms ease;
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.10);
+		border-color: $glass-border;
+	}
+}
+.cc-action-icon {
+	font-family: $font;
+	font-size: 14px;
+	color: $accent-blue;
+}
+.cc-action-label {
+	font-family: $font;
+	font-size: 11px;
+	color: $text-primary;
+}
+
 // ── Glass popup (screen settings) ──
 .glass-popup {
 	// See .cc-panel — gradient stops must stay above ignore_alpha threshold.
@@ -373,6 +482,15 @@ $monitor-2-color: $accent-blue;
 	&:hover {
 		background-color: rgba(255, 255, 255, 0.08);
 		border-color: $glass-border;
+	}
+	// Active popups carry the accent edge so they read as "new" at a glance.
+	&.cc-notif-active {
+		border-left: 2px solid $accent-blue;
+	}
+	// History items sit faded — clearly past, still readable.
+	&.cc-notif-history {
+		opacity: 0.72;
+		.cc-notif-app-icon { color: $text-secondary; }
 	}
 }
 .cc-notif-app-icon {
@@ -555,4 +673,60 @@ calendar {
 	&.low  { background-color: rgba(122, 220, 160, 0.18); color: $accent-green; }
 	&.mid  { background-color: rgba(240, 216, 117, 0.22); color: $accent-yellow; }
 	&.high { background-color: rgba(255, 160, 122, 0.28); color: $accent-orange; }
+}
+
+// ╔══════════════════════════════════════╗
+// ║          Mic pill (muted state)      ║
+// ╚══════════════════════════════════════╝
+.pill.mic-muted {
+	background-image: unquote("linear-gradient(to bottom, alpha(@error_color, 0.45) 0%, alpha(@error_color, 0.25) 100%)");
+	background-color: unquote("alpha(@error_color, 0.30)");
+	box-shadow:
+		inset 0  1px 0 unquote("alpha(@theme_fg_color, 0.18)"),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+		0 1px 4px unquote("alpha(@error_color, 0.45)");
+	.pill-icon { color: $text-primary; }
+}
+
+// ╔══════════════════════════════════════╗
+// ║          OSD (volume / mute)         ║
+// ╚══════════════════════════════════════╝
+.osd {
+	background-color: unquote("alpha(@theme_bg_color, 0.72)");
+	background-image: unquote("linear-gradient(145deg, alpha(@theme_bg_color, 0.65) 0%, alpha(@theme_bg_color, 0.72) 40%, alpha(@theme_bg_color, 0.80) 100%)");
+	border: 1px solid unquote("alpha(@theme_fg_color, 0.18)");
+	border-radius: $radius-panel;
+	padding: 14px 20px;
+	box-shadow: 0 1px 0 unquote("alpha(@theme_fg_color, 0.08)") inset,
+	            0 12px 32px rgba(0, 0, 0, 0.45);
+}
+.osd-icon {
+	font-family: $font;
+	font-size: 26px;
+	color: $text-primary;
+	min-width: 32px;
+}
+.osd-text {
+	font-family: $font;
+	font-size: 12px;
+	color: $text-primary;
+	font-feature-settings: "tnum";
+}
+.osd-bar {
+	trough {
+		background-color: unquote("alpha(@theme_fg_color, 0.10)");
+		border: none;
+		border-radius: 4px;
+		min-height: 6px;
+	}
+	block.filled {
+		background-image: unquote("linear-gradient(to right, @accent_color, @accent_color)");
+		border: none;
+		border-radius: 4px;
+		min-height: 6px;
+	}
+	block.empty {
+		background-color: transparent;
+		border: none;
+	}
 }

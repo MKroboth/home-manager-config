@@ -5,6 +5,7 @@ import Bar from "./widget/Bar";
 import ControlCenter from "./widget/ControlCenter";
 import CCCloser from "./widget/CCCloser";
 import ScreenSettings from "./widget/ScreenSettings";
+import Osd from "./widget/Osd";
 
 // Hyprland connector name of the monitor that should host the bar.
 // `hyprctl monitors -j | jq '.[].name'` lists the candidates.
@@ -36,5 +37,6 @@ App.start({
     ControlCenter(monitor);
     CCCloser(monitor);
     ScreenSettings(monitor);
+    Osd(monitor);
   },
 });

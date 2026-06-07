@@ -3,6 +3,7 @@ import Workspaces from "./pills/Workspaces";
 import WindowTitle from "./pills/WindowTitle";
 import Weather from "./pills/Weather";
 import Audio from "./pills/Audio";
+import Mic from "./pills/Mic";
 import Network from "./pills/Network";
 import Systats from "./pills/Systats";
 import Time from "./pills/Time";
@@ -20,18 +21,18 @@ export default function Bar(monitor: Gdk.Monitor) {
       anchor={Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       layer={Astal.Layer.TOP}
-      marginBottom={8}
     >
       <centerbox>
-        <box halign={Gtk.Align.START} spacing={8}>
+        <box halign={Gtk.Align.START} spacing={10}>
           <Workspaces />
         </box>
-        <box halign={Gtk.Align.CENTER} spacing={6}>
+        <box halign={Gtk.Align.CENTER} spacing={8}>
           <WindowTitle />
         </box>
-        <box halign={Gtk.Align.END} spacing={4}>
+        <box halign={Gtk.Align.END} spacing={8}>
           <Weather />
           <Audio />
+          <Mic />
           <Network />
           <Systats />
           <Time />

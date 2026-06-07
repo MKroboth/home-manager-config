@@ -3,11 +3,6 @@
 {
   home.username = "mkr";
   home.homeDirectory = "/home/mkr";
-  wayland.windowManager.hyprland = {
-    enable = true;
-    package = null;
-    portalPackage = null;
-  };
   nixpkgs.config = {
     allowUnfree = true;
     permittedInsecurePackages = [

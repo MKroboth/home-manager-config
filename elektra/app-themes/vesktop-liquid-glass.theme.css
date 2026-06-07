@@ -1,81 +1,156 @@
 /**
  * @name Liquid Glass
- * @description Translucent Discord chrome matching the system eww/wofi/mako theme.
+ * @description Translucent Discord chrome that follows the system colour scheme.
  * @author mkr
- * @version 1.0.0
+ * @version 2.0.0
  *
  * Auto-symlinked into ~/.config/vesktop/themes/ by elektra/app-themes wiring.
  * Enable under Vesktop → Settings → Vencord → Themes.
+ *
+ * Mode detection:
+ *   - @media (prefers-color-scheme): primary signal. Vesktop needs to see the
+ *     OS scheme — on Hyprland that means xdg-desktop-portal-gtk (or similar)
+ *     running. Restart Vesktop after toggling the system theme.
+ *   - body.theme-light: secondary override when Discord's own theme is set
+ *     to Light, regardless of the OS scheme.
  */
 
+/* ---------------------------------------------------------------------------
+ * Palette — flipped between dark and light by the cascade below.
+ * --------------------------------------------------------------------------- */
 :root {
-	--lg-bg: rgba(12, 12, 18, 0.55);
-	--lg-bg-strong: rgba(12, 12, 18, 0.72);
-	--lg-border: rgba(255, 255, 255, 0.12);
-	--lg-text: rgba(255, 255, 255, 0.92);
-	--lg-text-muted: rgba(255, 255, 255, 0.55);
-	--lg-accent: #7aafff;
+	--lg-bg-rgb: 16, 18, 24;
+	--lg-fg-rgb: 230, 232, 240;
+	--lg-text-rgb: 230, 232, 240;
+	--lg-accent-rgb: 122, 175, 255;
 }
 
+@media (prefers-color-scheme: light) {
+	:root {
+		--lg-bg-rgb: 240, 242, 248;
+		--lg-fg-rgb: 20, 22, 30;
+		--lg-text-rgb: 20, 22, 30;
+		--lg-accent-rgb: 58, 109, 209;
+	}
+}
+
+body.theme-light {
+	--lg-bg-rgb: 240, 242, 248;
+	--lg-fg-rgb: 20, 22, 30;
+	--lg-text-rgb: 20, 22, 30;
+	--lg-accent-rgb: 58, 109, 209;
+}
+
+/* ---------------------------------------------------------------------------
+ * Outer chrome — force the wrappers transparent so the compositor blur
+ * shows through. Discord hashes class names per build, so match by stable
+ * prefix instead of exact name.
+ * --------------------------------------------------------------------------- */
+html,
+body,
+#app-mount,
+[class*="appMount_"],
+[class*="appAsidePanelWrapper_"],
+[class*="notAppAsidePanel_"],
+[class*="bg__"],
+[class*="layers_"],
+[class*="layer_"],
+[class*="baseLayer_"],
+[class*="container_"][class*="app_"] {
+	background: transparent !important;
+	background-color: transparent !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * Discord CSS variables — overridden on every theme class so palette
+ * switching is handled by --lg-* alone.
+ *
+ * Discord's redesign uses --background-base-* + --background-mod-*; the
+ * legacy --background-primary/secondary/... vars are still read by older
+ * code paths, so override both namespaces.
+ * --------------------------------------------------------------------------- */
 .theme-dark,
 .theme-darker,
-.theme-midnight {
-	/* Background layers */
-	--background-primary: var(--lg-bg) !important;
-	--background-secondary: var(--lg-bg-strong) !important;
-	--background-secondary-alt: rgba(12, 12, 18, 0.78) !important;
-	--background-tertiary: rgba(12, 12, 18, 0.85) !important;
-	--background-accent: rgba(122, 175, 255, 0.18) !important;
-	--background-floating: rgba(12, 12, 18, 0.82) !important;
-	--background-mobile-primary: var(--lg-bg) !important;
-	--background-mobile-secondary: var(--lg-bg-strong) !important;
-	--background-modifier-hover: rgba(255, 255, 255, 0.06) !important;
-	--background-modifier-active: rgba(255, 255, 255, 0.08) !important;
-	--background-modifier-selected: rgba(122, 175, 255, 0.18) !important;
-	--background-modifier-accent: rgba(255, 255, 255, 0.04) !important;
+.theme-midnight,
+.theme-light {
+	/* Backgrounds — current namespace.
+	 * "lowest" = darkest/innermost in the new scheme = server-list bar.
+	 * "low"    = lightest = chat content (kept more opaque for legibility).
+	 * Sidebar opacities are tuned so the compositor blur still shows through,
+	 * but with enough darkening that muted-color text (channel names, online
+	 * users) stays legible against bright wallpapers. */
+	--background-base-lowest: rgba(var(--lg-bg-rgb), 0.35) !important;
+	--background-base-lower:  rgba(var(--lg-bg-rgb), 0.45) !important;
+	--background-base-low:    rgba(var(--lg-bg-rgb), 0.72) !important;
+	--background-mod-subtle:  rgba(var(--lg-fg-rgb), 0.06) !important;
+	--background-mod-normal:  rgba(var(--lg-fg-rgb), 0.10) !important;
+	--background-mod-strong:  rgba(var(--lg-fg-rgb), 0.16) !important;
 
-	/* Text */
-	--text-normal: var(--lg-text) !important;
-	--text-muted: var(--lg-text-muted) !important;
-	--text-link: var(--lg-accent) !important;
-	--header-primary: var(--lg-text) !important;
-	--header-secondary: var(--lg-text-muted) !important;
+	/* Backgrounds — legacy namespace.
+	 * primary = chat content, secondary = channel list, tertiary = server bar. */
+	--background-primary:       rgba(var(--lg-bg-rgb), 0.72) !important;
+	--background-secondary:     rgba(var(--lg-bg-rgb), 0.45) !important;
+	--background-secondary-alt: rgba(var(--lg-bg-rgb), 0.50) !important;
+	--background-tertiary:      rgba(var(--lg-bg-rgb), 0.35) !important;
+	--background-floating:      rgba(var(--lg-bg-rgb), 0.90) !important;
+	--background-modifier-hover:    rgba(var(--lg-fg-rgb), 0.06) !important;
+	--background-modifier-active:   rgba(var(--lg-fg-rgb), 0.10) !important;
+	--background-modifier-selected: rgba(var(--lg-fg-rgb), 0.16) !important;
+	--background-modifier-accent:   rgba(var(--lg-fg-rgb), 0.04) !important;
 
-	/* Interactive */
-	--interactive-normal: var(--lg-text-muted) !important;
-	--interactive-hover: var(--lg-text) !important;
-	--interactive-active: var(--lg-text) !important;
-	--interactive-muted: rgba(255, 255, 255, 0.35) !important;
+	/* Text — current + legacy.
+	 * Muted/secondary text stays brighter than Discord's defaults because
+	 * the chrome is partly translucent, so the usual 0.6 opacity washes out. */
+	--text-default:     rgb(var(--lg-text-rgb)) !important;
+	--text-muted:       rgba(var(--lg-text-rgb), 0.82) !important;
+	--text-strong:      rgb(var(--lg-text-rgb)) !important;
+	--text-normal:      rgb(var(--lg-text-rgb)) !important;
+	--header-primary:   rgb(var(--lg-text-rgb)) !important;
+	--header-secondary: rgba(var(--lg-text-rgb), 0.78) !important;
 
-	/* Channel/message accents */
-	--channeltextarea-background: rgba(255, 255, 255, 0.06) !important;
-	--scrollbar-thin-thumb: rgba(255, 255, 255, 0.18) !important;
+	/* Interactive icons / labels — channel names in the sidebar read from
+	 * --interactive-normal, so this controls their legibility directly. */
+	--interactive-normal:       rgba(var(--lg-text-rgb), 0.92) !important;
+	--interactive-hover:        rgb(var(--lg-text-rgb)) !important;
+	--interactive-active:       rgb(var(--lg-text-rgb)) !important;
+	--interactive-muted:        rgba(var(--lg-text-rgb), 0.45) !important;
+	--interactive-icon-default: rgba(var(--lg-text-rgb), 0.85) !important;
+	--interactive-icon-hover:   rgb(var(--lg-text-rgb)) !important;
+	--interactive-icon-active:  rgb(var(--lg-text-rgb)) !important;
+
+	/* Brand accent */
+	--brand-500:            rgb(var(--lg-accent-rgb)) !important;
+	--brand-experiment:     rgb(var(--lg-accent-rgb)) !important;
+	--brand-experiment-560: rgb(var(--lg-accent-rgb)) !important;
+	--text-link:            rgb(var(--lg-accent-rgb)) !important;
+	--text-brand:           rgb(var(--lg-accent-rgb)) !important;
+
+	/* Inputs */
+	--channeltextarea-background: rgba(var(--lg-fg-rgb), 0.06) !important;
+	--input-background:           rgba(var(--lg-fg-rgb), 0.06) !important;
+
+	/* Scrollbars */
+	--scrollbar-thin-thumb: rgba(var(--lg-fg-rgb), 0.18) !important;
 	--scrollbar-thin-track: transparent !important;
-	--scrollbar-auto-thumb: rgba(255, 255, 255, 0.18) !important;
+	--scrollbar-auto-thumb: rgba(var(--lg-fg-rgb), 0.18) !important;
 	--scrollbar-auto-track: transparent !important;
-
-	/* Brand */
-	--brand-experiment: var(--lg-accent) !important;
-	--brand-experiment-560: #6a9fef !important;
 }
 
-/* Hairline highlight on the top of major panels (specular). */
-.sidebar_a4d4d9,
-.container_eedf95,
-.container_b2ce9c {
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+/* ---------------------------------------------------------------------------
+ * Side panels paint their backgrounds directly in some places — force the
+ * server-bar, channel/DM list, and member list to be heavily translucent
+ * regardless of which variable Discord ends up reading.
+ * --------------------------------------------------------------------------- */
+[class*="guilds_"],          /* leftmost server-list bar */
+[class*="sidebar_"],         /* channel / DM list */
+[class*="membersWrap_"],     /* member list (right side) */
+[class*="members_"][class*="container_"],
+[class*="panels_"] {         /* user-area panel under the channel list */
+	background-color: rgba(var(--lg-bg-rgb), 0.40) !important;
 }
 
-/* Rounded selection pills throughout. */
-.containerDefault__91a9d,
-.iconBase_b1d6f6,
-.wrapper__01ef4,
-.layout_a31eb9 {
-	border-radius: 10px !important;
-}
-
-/* Message hover */
-.messageListItem__5126c:hover,
-.cozyMessage__5126c:hover {
-	background-color: rgba(255, 255, 255, 0.04) !important;
+/* Chat scroll area stays a touch more solid so messages read clearly. */
+[class*="chatContent_"],
+[class*="chat_"][class*="content"] {
+	background-color: rgba(var(--lg-bg-rgb), 0.55) !important;
 }

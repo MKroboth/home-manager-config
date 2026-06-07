@@ -51,4 +51,26 @@ used=$((tot - avail))
 mem_pct=$(( tot > 0 ? 100 * used / tot : 0 ))
 mem_json="{\"total_mib\":$((tot/1024)),\"used_mib\":$((used/1024)),\"pct\":$mem_pct}"
 
-echo "{\"cores\":$cores,\"core_rows\":$core_rows,\"temps\":$temps,\"mem\":$mem_json}"
+# Pick the amdgpu card with the most VRAM — picks the discrete card without
+# hardcoding card0/card1 (enumeration order can change across kernel updates).
+gpu_card=""
+gpu_max_vram=0
+for c in /sys/class/drm/card*/device; do
+  [ -f "$c/mem_info_vram_total" ] || continue
+  vram=$(cat "$c/mem_info_vram_total" 2>/dev/null || echo 0)
+  if [ "$vram" -gt "$gpu_max_vram" ]; then
+    gpu_max_vram=$vram
+    gpu_card=$c
+  fi
+done
+if [ -n "$gpu_card" ]; then
+  gpu_busy=$(cat "$gpu_card/gpu_busy_percent" 2>/dev/null || echo 0)
+  vram_total=$gpu_max_vram
+  vram_used=$(cat "$gpu_card/mem_info_vram_used" 2>/dev/null || echo 0)
+  vram_pct=$(( vram_total > 0 ? 100 * vram_used / vram_total : 0 ))
+  gpu_json="{\"busy\":$gpu_busy,\"vram_total\":$vram_total,\"vram_used\":$vram_used,\"vram_pct\":$vram_pct}"
+else
+  gpu_json="null"
+fi
+
+echo "{\"cores\":$cores,\"core_rows\":$core_rows,\"temps\":$temps,\"mem\":$mem_json,\"gpu\":$gpu_json}"

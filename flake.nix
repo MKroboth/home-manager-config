@@ -49,6 +49,7 @@
           ./elektra/hypridle.nix
           ./elektra/qt.nix
           ./elektra/app-themes.nix
+          ./elektra/xdg-portal.nix
           ./elektra/packages.nix
         ];
 

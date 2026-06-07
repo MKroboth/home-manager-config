@@ -5,16 +5,46 @@
      ln -sf ~/.config/home-manager/elektra/app-themes/librewolf-userChrome.css \
             ~/.librewolf/<profile>/chrome/userChrome.css
    Then enable in about:config:
-     toolkit.legacyUserProfileCustomizations.stylesheets = true */
+     toolkit.legacyUserProfileCustomizations.stylesheets = true
+
+   Mode detection — two parallel signals, whichever fires first wins:
+     - @media (prefers-color-scheme: light): Gecko reads the OS scheme.
+       With xdg-desktop-portal-gtk running (it is on your Hyprland setup),
+       this flips live when the eww toggle changes dconf.
+     - :root[lwt-toolbar="light"]: backup signal driven by Librewolf's own
+       theme setting; matches the existing light/dark switch you already
+       have working. */
 
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 :root {
-	--lg-bg: rgba(12, 12, 18, 0.72);
-	--lg-bg-hover: rgba(255, 255, 255, 0.06);
-	--lg-border: rgba(255, 255, 255, 0.12);
-	--lg-text: rgba(255, 255, 255, 0.92);
+	/* Default (dark) palette. */
+	--lg-bg-rgb: 12, 12, 18;
+	--lg-fg-rgb: 255, 255, 255;
 	--lg-accent: #7aafff;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--lg-bg-rgb: 245, 245, 250;
+		--lg-fg-rgb: 15, 15, 22;
+		--lg-accent: #3a6dd1;
+	}
+}
+
+/* Backup: if Librewolf's LWT theme attribute says light, use light. */
+:root[lwt-toolbar="light"] {
+	--lg-bg-rgb: 245, 245, 250;
+	--lg-fg-rgb: 15, 15, 22;
+	--lg-accent: #3a6dd1;
+}
+
+/* Derivatives — alpha-blends so every surface follows the base palette. */
+:root {
+	--lg-bg: rgba(var(--lg-bg-rgb), 0.72);
+	--lg-bg-subtle: rgba(var(--lg-fg-rgb), 0.06);
+	--lg-border: rgba(var(--lg-fg-rgb), 0.12);
+	--lg-text: rgba(var(--lg-fg-rgb), 0.92);
 }
 
 /* Whole chrome: translucent + soft border between chrome and content. */
@@ -26,12 +56,12 @@
 	background-color: var(--lg-bg) !important;
 	background-image: linear-gradient(
 		to bottom,
-		rgba(255, 255, 255, 0.05) 0%,
-		rgba(255, 255, 255, 0) 100%
+		rgba(var(--lg-fg-rgb), 0.05) 0%,
+		rgba(var(--lg-fg-rgb), 0) 100%
 	) !important;
 	color: var(--lg-text) !important;
 	border-color: var(--lg-border) !important;
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+	box-shadow: inset 0 1px 0 rgba(var(--lg-fg-rgb), 0.05) !important;
 }
 
 #nav-bar {
@@ -42,15 +72,15 @@
 #urlbar,
 #urlbar-background,
 #searchbar {
-	background-color: rgba(255, 255, 255, 0.06) !important;
+	background-color: var(--lg-bg-subtle) !important;
 	border: 1px solid var(--lg-border) !important;
 	border-radius: 14px !important;
 	color: var(--lg-text) !important;
 }
 
 #urlbar[focused="true"] > #urlbar-background {
-	border-color: rgba(122, 175, 255, 0.55) !important;
-	box-shadow: 0 0 0 2px rgba(122, 175, 255, 0.18) !important;
+	border-color: rgba(var(--lg-fg-rgb), 0.35) !important;
+	box-shadow: 0 0 0 2px rgba(var(--lg-fg-rgb), 0.12) !important;
 }
 
 /* Tabs: rounded pill look with a hairline highlight. */
@@ -60,12 +90,12 @@
 }
 
 .tabbrowser-tab[selected="true"] .tab-background {
-	background-color: rgba(122, 175, 255, 0.20) !important;
-	border: 1px solid rgba(122, 175, 255, 0.35) !important;
+	background-color: rgba(var(--lg-fg-rgb), 0.18) !important;
+	border: 1px solid rgba(var(--lg-fg-rgb), 0.28) !important;
 }
 
 .tabbrowser-tab:not([selected="true"]) .tab-background:hover {
-	background-color: rgba(255, 255, 255, 0.06) !important;
+	background-color: var(--lg-bg-subtle) !important;
 }
 
 /* Toolbar buttons. */
@@ -74,7 +104,7 @@ toolbarbutton .toolbarbutton-icon {
 }
 
 toolbarbutton:hover .toolbarbutton-icon {
-	background-color: rgba(255, 255, 255, 0.06) !important;
+	background-color: var(--lg-bg-subtle) !important;
 	border-radius: 8px !important;
 }
 
