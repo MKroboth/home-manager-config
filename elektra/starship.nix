@@ -6,7 +6,7 @@
     settings = {
       add_newline = false;
       format = "$directory$git_branch$git_status$line_break$character";
-      right_format = "$status$cmd_duration$jobs$direnv$rust$username$hostname$nix_shell$vim_mode";
+      right_format = "$status$cmd_duration$jobs$direnv$rust$username$hostname$nix_shell";
 
       directory = {
         style = "bold #00afff";
@@ -105,17 +105,6 @@
         unknown_msg = "?";
         format = "[ $state( \\($name\\))]($style) ";
         style = "bold #74c7ec";
-      };
-
-      # Requires bindkey -v in zshrc (added in zsh.nix)
-      vim_mode = {
-        disabled = false;
-        insert_symbol = "";
-        normal_symbol = "NORMAL";
-        visual_symbol = "VISUAL";
-        replace_symbol = "OVERTYPE";
-        style = "bold green";
-        format = "[$symbol]($style)";
       };
 
       # Changes ❯ → ❮ in normal mode, mirrors p10k prompt_char colours
