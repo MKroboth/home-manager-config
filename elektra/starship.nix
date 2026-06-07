@@ -5,7 +5,7 @@
     enable = true;
     settings = {
       add_newline = false;
-      format = "$directory$git_branch$git_status$line_break$character";
+      format = "$directory$git_branch$git_status$character";
       right_format = "$status$cmd_duration$jobs$direnv$rust$username$hostname$nix_shell";
 
       directory = {
