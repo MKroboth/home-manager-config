@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-eww --force-wayland open middle-bar
-eww --force-wayland open screen-settings
-eww --force-wayland open control-center

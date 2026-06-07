@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Outputs JSON with current media info via playerctl
-playerctl -F metadata --format '{"title": "{{markup_escape(title)}}", "artist": "{{markup_escape(artist)}}", "status": "{{status}}", "art_url": "{{mpris:artUrl}}"}' 2>/dev/null || echo '{"title": "", "artist": "", "status": "Stopped", "art_url": ""}'

@@ -3,11 +3,10 @@ import { bind, execAsync, Variable } from "astal";
 import Bluetooth from "gi://AstalBluetooth";
 import Wp from "gi://AstalWp";
 import Mpris from "gi://AstalMpris";
-import Notifd from "gi://AstalNotifd";
 
 import { showControlCenter, nightlight, darkMode } from "../state";
 import { toggleTheme } from "../lib/theme";
-import { systats, cpuTemperature, weather, netDetail } from "../lib/data";
+import { systats, cpuTemperature, weather, netDetail, notifActive, notifHistory, makoModes, type Notif } from "../lib/data";
 import CCToggle from "./CCToggle";
 
 function appIcon(name: string) {
@@ -23,7 +22,7 @@ function appIcon(name: string) {
 
 function Toggles() {
   const bt = Bluetooth.get_default();
-  const notifd = Notifd.get_default();
+  const dnd = bind(makoModes).as(m => m.includes("do-not-disturb"));
 
   const wiredUp = bind(netDetail).as(d => {
     const br = d.ifaces.find(i => i.kind === "bridge");
@@ -55,16 +54,18 @@ function Toggles() {
             },
           )()}
           active={bind(bt, "isPowered")}
-          onClick={() => { bt.toggle(); }}
+          onClick={() => { execAsync(["blueman-manager"]).catch(() => {}); }}
         />
       </box>
       <box spacing={8} homogeneous>
         <CCToggle
-          icon={bind(notifd, "dontDisturb").as(d => d ? "󰂛" : "󰂚")}
+          icon={dnd.as(d => d ? "󰂛" : "󰂚")}
           label="Do Not Disturb"
-          sublabel={bind(notifd, "dontDisturb").as(d => d ? "On" : "Off")}
-          active={bind(notifd, "dontDisturb")}
-          onClick={() => { notifd.dontDisturb = !notifd.dontDisturb; }}
+          sublabel={dnd.as(d => d ? "On" : "Off")}
+          active={dnd}
+          onClick={() => {
+            execAsync(["makoctl", "mode", "-t", "do-not-disturb"]).catch(() => {});
+          }}
         />
         <CCToggle
           icon="󰖔"
@@ -163,8 +164,80 @@ function Sliders() {
   );
 }
 
+// Mako keeps history in memory until restart and exposes no "forget single
+// entry" CLI, so we filter the displayed history through a local hide-set
+// and persist it in mako across restarts as well via a session marker file.
+const hidden = Variable(new Set<number>());
+
 function Notifications() {
-  const notifd = Notifd.get_default();
+  const combined = Variable.derive(
+    [bind(notifActive), bind(notifHistory), bind(hidden)],
+    (active, history, hide) => {
+      const activeIds = new Set(active.map(n => n.id));
+      const histClean = history
+        .filter(n => !activeIds.has(n.id) && !hide.has(n.id))
+        .slice(0, 25);
+      return { active, history: histClean, total: active.length + histClean.length };
+    },
+  );
+
+  function clearAll() {
+    execAsync(["makoctl", "dismiss", "--all"]).catch(() => {});
+    // Hide everything currently in history; mako-restart resets the set.
+    const next = new Set(hidden.get());
+    for (const n of notifHistory.get()) next.add(n.id);
+    hidden.set(next);
+  }
+
+  function invoke(n: Notif) {
+    const act = n.actions?.default ? "default" : Object.keys(n.actions ?? {})[0];
+    if (!act) return;
+    execAsync(["makoctl", "invoke", "-n", String(n.id), act]).catch(() => {});
+  }
+
+  function dismissActive(n: Notif) {
+    execAsync(["makoctl", "dismiss", "-n", String(n.id)]).catch(() => {});
+  }
+
+  function hideHistory(n: Notif) {
+    const next = new Set(hidden.get());
+    next.add(n.id);
+    hidden.set(next);
+  }
+
+  function row(n: Notif, isActive: boolean) {
+    return (
+      <eventbox onClick={() => invoke(n)}>
+        <box className={`cc-notif-item ${isActive ? "cc-notif-active" : "cc-notif-history"}`} spacing={8}>
+          <label className="cc-notif-app-icon" label={appIcon(n.app_name)} />
+          <box vertical hexpand>
+            <label
+              className="cc-notif-summary"
+              halign={Gtk.Align.START}
+              maxWidthChars={30}
+              truncate
+              label={n.summary ?? ""}
+            />
+            <label
+              className="cc-notif-body"
+              halign={Gtk.Align.START}
+              maxWidthChars={36}
+              truncate
+              visible={!!n.body}
+              label={n.body ?? ""}
+            />
+          </box>
+          <button
+            className="cc-notif-close"
+            onClicked={() => isActive ? dismissActive(n) : hideHistory(n)}
+          >
+            <label label="󰅖" />
+          </button>
+        </box>
+      </eventbox>
+    );
+  }
+
   return (
     <box className="cc-section cc-notif-section" vertical spacing={6}>
       <box className="cc-notif-header">
@@ -172,56 +245,35 @@ function Notifications() {
           className="cc-notif-title"
           hexpand
           halign={Gtk.Align.START}
-          label={bind(notifd, "notifications").as(n =>
-            n.length > 0 ? `Notifications (${n.length})` : "Notifications",
-          )}
+          label={combined(c => c.total > 0 ? `Notifications (${c.total})` : "Notifications")}
         />
         <button
           className="cc-notif-dismiss"
-          visible={bind(notifd, "notifications").as(n => n.length > 0)}
-          onClicked={() => {
-            for (const n of notifd.get_notifications()) n.dismiss();
-          }}
+          visible={combined(c => c.total > 0)}
+          onClicked={clearAll}
         >
           <label label="Clear" />
         </button>
       </box>
-      <box vertical spacing={4}>
-        <label
-          className="cc-notif-empty"
-          label="No notifications"
-          visible={bind(notifd, "notifications").as(n => n.length === 0)}
-        />
-        {bind(notifd, "notifications").as(items =>
-          items.map(n => (
-            <eventbox onClick={() => n.invoke()}>
-              <box className="cc-notif-item" spacing={8}>
-                <label className="cc-notif-app-icon" label={appIcon(n.appName)} />
-                <box vertical hexpand>
-                  <label
-                    className="cc-notif-summary"
-                    halign={Gtk.Align.START}
-                    maxWidthChars={30}
-                    truncate
-                    label={n.summary ?? ""}
-                  />
-                  <label
-                    className="cc-notif-body"
-                    halign={Gtk.Align.START}
-                    maxWidthChars={36}
-                    truncate
-                    visible={!!n.body}
-                    label={n.body ?? ""}
-                  />
-                </box>
-                <button className="cc-notif-close" onClicked={() => n.dismiss()}>
-                  <label label="󰅖" />
-                </button>
-              </box>
-            </eventbox>
-          )),
-        )}
-      </box>
+      <label
+        className="cc-notif-empty"
+        label="No notifications"
+        visible={combined(c => c.total === 0)}
+      />
+      <scrollable
+        hscroll={Gtk.PolicyType.NEVER}
+        vscroll={Gtk.PolicyType.AUTOMATIC}
+        propagateNaturalHeight
+        maxContentHeight={260}
+        visible={combined(c => c.total > 0)}
+      >
+        <box vertical spacing={4}>
+          {combined(c => [
+            ...c.active.map(n => row(n, true)),
+            ...c.history.map(n => row(n, false)),
+          ])}
+        </box>
+      </scrollable>
     </box>
   );
 }
@@ -248,6 +300,26 @@ function QuickInfo() {
         <label className="cc-info-icon" label={bind(weather).as(w => weatherIcon(w.code))} />
         <label className="cc-info-text" label={bind(weather).as(w => `${w.temp_c}°`)} />
       </box>
+    </box>
+  );
+}
+
+function PowerActions() {
+  return (
+    <box className="cc-section cc-actions" spacing={8} homogeneous>
+      <button
+        className="cc-action-btn"
+        onClicked={() => {
+          showControlCenter.set(false);
+          // loginctl routes through hypridle's lock_cmd, which spawns hyprlock.
+          execAsync(["loginctl", "lock-session"]).catch(() => {});
+        }}
+      >
+        <box spacing={8} halign={Gtk.Align.CENTER}>
+          <label className="cc-action-icon" label="󰌾" />
+          <label className="cc-action-label" label="Lock" />
+        </box>
+      </button>
     </box>
   );
 }
@@ -293,6 +365,7 @@ export default function ControlCenter(monitor: Gdk.Monitor) {
           <Sliders />
           <Notifications />
           <QuickInfo />
+          <PowerActions />
         </box>
       </revealer>
     </window>
